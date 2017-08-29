@@ -33,9 +33,9 @@ close all; clc
 
 %%% hardcoding part: %%%%%%%
 %makelots = 1; % if 1 than make plots, if 0 then skip
-a1 = 9; %first file to be analyzed: (start with 2, because 1 is col header)
-a2 = a1;%LastFile; %for last File script must run once LastFile ; %(last file to be analyzed; either number or variable LastFile;)
-LeakFile = 'NaGlu(300Bmil)';
+a1 = 31; %first file to be analyzed: (start with 2, because 1 is col header)
+a2 = a1%LastFile; %for last File script must run once LastFile ; %(last file to be analyzed; either number or variable LastFile;)
+LeakFile = 'NaGlu(300EIPA)';
 stimuli = 'STEPSens';
 DimRefill = 8; %change if File8 was not a Step : maybe, find first step protocol...
 %this needs to be changed, because stupidly hardcoded
