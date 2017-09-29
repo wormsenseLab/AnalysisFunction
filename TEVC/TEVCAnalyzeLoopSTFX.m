@@ -31,13 +31,13 @@ close all; clc
 %%% hardcoding part: %%%%%%%
 stimuli = 'ContRamp1550'; % stimuli used to be analyzed. so far only one protocol
 %Ramp80COnt
-makePlots = 0; % if 1 than make plots, if 0 then skip
-a1 = 2; %first file to be analyzed: (start with 2, because 1 is col header)
-a2 = LastFile;%%LastFile;% LastFile; %for last File script must run once LastFile ; %(last file to be analyzed; either number or variable LastFile;)
+makePlots = 1; % if 1 than make pl, if 0 then skip
+a1 = 15; %first file to be analyzed: (start with 2, because 1 is col header)
+a2 = a1% LastFile;%%LastFile;% LastFile; %for last File script must run once LastFile ; %(last file to be analyzed; either number or variable LastFile;)
 
 %%%%%%%%
 
-%%%%%%%
+%%%%%%11
 AllCol = []; headers = [];indCellID = [];
 headers = raw(1,:); % saw 1st row of raw data as headers
 indCellID = find(strcmpi(headers, 'CellID')); % find col where the CellID is stored
@@ -82,7 +82,7 @@ writetable(T,filename,'WriteVar', true)
 % For loop to analyze all cells loaded from MetaData sheet.
 % a1 and a2 can be changed at the beginning or here.
 for i=a1:a2%1:LastFile;% %start with 2, because 1st value is header; shorten here, if you want to analyze less
-   try
+ try
 callCellID = {}; name = [];
 callCellID = raw(i,indCellID);
 name = callCellID{1};
@@ -317,12 +317,12 @@ plot(VrevmV,'o')
 ylabel('Reversal Potential (mV)')
 xlabel('Points')
  figure()
- plot(AalluA)
- figure()
- plot(AalluA(:,1:3))
- hold on
- plot(AalluA(:,end-2:end))
- legend(name2,LegendInj)
+ plot(AalluA(:,5))
+%  figure()
+% plot(AalluA(:,1:3))
+% hold on
+% plot(AalluA(:,end-2:end20
+% legend(name2,LegendInj)
  ylabel('Current (uA)')
  xlabel('Sweep length (ms) - (interval 4 s)')
 else
@@ -375,7 +375,7 @@ fmt=[strjoin(fmt,',') '\n'];
         display 'there were an error; skip this file; write in table that there were an error'
         continue
     end
-%     
+    
 
 end
 

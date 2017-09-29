@@ -18,7 +18,7 @@ end
 close all; clc
 
 %%% hardcoding part:
-name = 'STF080'; % name of recording. placed into varaibel fiels names%
+name = 'STFX098'; % name of recording. placed into varaibel fiels names%
 stimuli = 'IVStep'; 
 % protocol names:
 % Single protocols: Step and Ramp-Hold; 
@@ -112,7 +112,6 @@ plot(Aall(:,i))
 end
 
 
-
 %%
 ActuSensor = [];
 ActuSensorCellArray = cellfun(@(x) x*1.5,BShort,'un',0); %multiply all values in the cell with 1.5
@@ -123,6 +122,7 @@ ActuSensorB3D = cat(3, ActuSensorCellArray{:}); %1strows, 2nc col, 3rd different
 Aall3D = cat(3, AShort{:}); % current
 Call3D = cat(3, CShort{:}); % cantilever signal
 Dall3D = cat(3, DShort{:}); % Actuator Setpoint
+
 
 ALeak = mean(Aall3D (2000:2200,:,:)); %leak current % toDo not hard coded;
 ASubtract = bsxfun(@minus, Aall3D(:,:,:), ALeak);

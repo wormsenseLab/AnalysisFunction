@@ -1,5 +1,5 @@
 %Analyze CT_protocols to calculate Cm,tau and Rs
-
+% modified from Samata Katta
 
 %%  load dat.files 
 clear all; close all; clc;
@@ -20,7 +20,7 @@ close all; clc
 
 %%% hardcoding part:
 
-    name = 'STF031'; % name of recording. placed into varaibel fiels names
+    name = 'STF111'; % name of recording. placed into varaibel fiels names
     
     % Look for pgf names ending in "WC_ct_neg and WC_ct_pos" and note their locations.
     protNameNeg = 'WC_ct_neg';
@@ -46,8 +46,8 @@ close all; clc
         ctNeg = -1.*ephysData.(name).data{1,protLocNeg(i)};
         ctPos = ephysData.(name).data{1,protLocPos(i)};
        
-        ctNegSubtract = bsxfun(@minus, ctNeg, mean(ctNeg(1:20,:)));
-        ctPosSubtract = bsxfun(@minus, ctPos, mean(ctPos(1:20,:)));
+       ctNegSubtract = bsxfun(@minus, ctNeg, mean(ctNeg(1:20,:)));
+       ctPosSubtract = bsxfun(@minus, ctPos, mean(ctPos(1:20,:)));
         
       meanCt(:,i) = mean([ctNegSubtract ctPosSubtract],2); % gives the leak subtracted mean of each pair of POS-NEG CT Step combined
   

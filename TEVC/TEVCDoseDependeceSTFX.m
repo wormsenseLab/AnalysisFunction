@@ -33,11 +33,12 @@ close all; clc
 
 %%% hardcoding part: %%%%%%%
 %makelots = 1; % if 1 than make plots, if 0 then skip
-a1 = 31; %first file to be analyzed: (start with 2, because 1 is col header)
+a1 = 13; %first file to be analyzed: (start with 2, because 1 is col header)
 a2 = a1%LastFile; %for last File script must run once LastFile ; %(last file to be analyzed; either number or variable LastFile;)
-LeakFile = 'NaGlu(300EIPA)';
+LeakFile = 'NaGlu(300Bmil)';
 stimuli = 'STEPSens';
-DimRefill = 8; %change if File8 was not a Step : maybe, find first step protocol...
+%%%%% !!!!!!!!!
+DimRefill = 3; %change if File8 was not a Step : maybe, find first step protocol...
 %this needs to be changed, because stupidly hardcoded
 %DimOfA = cell2mat(A(8)); %TODO: needs to be a file with Step protocol.
 % needs to replace other protocols than StepSens with NaN values; shorting
@@ -130,14 +131,16 @@ A{i} = ephysData.(name).data{1, i}; %Current
 V{i} = ephysData.(name).data{2, i}; %Voltage
 end
 
-DimOfA = cell2mat(A(DimRefill));
+DimOfA = cell2mat(A(DimRefill));% hardcoded to get current dimension of step protocol
 DimOfA2 = size(DimOfA);
 % MAYBE DON'T INCLUDE, because then series order would change
 %   find all files with certain protocol name: 
 % ifelse statement: if not respective stimuli name (FiveStep or FiveRampHold), then empty array; 
 
+
+
 for i = Files(:,1):Files(:,end);
-   if find(strcmpi(ephysData.(name).protocols{1,i}, stimuli)) == 1;
+   if find(strcmpi(ephysData.(name).protocols{1,i}, stimuli)) == 1 & size(A{1, i},2) == size((DimOfA),2);%isequal(size(A{1, i},2),size((DimOfA),2))
 %        if size(A{1, i},2)<max(DimOfA2(2))
 %            A{1, i} = NaN(DimOfA2(1),DimOfA2(2)); ; V{1, i} = NaN(DimOfA2(1),DimOfA2(2));  % of protocl was interupted and fewer steps than the dimension, replace with NaN
          continue  
@@ -190,7 +193,8 @@ AMeanMinus85Series = reshape(AMeanMinus85Series,[],size(AMeanMinus85,2),1); %red
 Vall3D = cat(3, VShort{:});
 figure()
 plot(AMeanMinus85Series, 'o')
-
+ legend(InjectionMix)
+ 
 %TODO: pay attention with AShort, because Series then are maybe not  
 AMean = mean(Aall3D(400:700,:,:)); %ToDo: Not hardcoded
 VMean = mean(Vall3D(400:700,:,:)); 
@@ -292,9 +296,22 @@ DPIExp = cell2mat(DPIExp);
   MEANVoltageConditions = num2cell(MEANVoltageConditions);
 LEAKMinus85 = num2cell(LEAKMinus85);
   TestSolution = TestSolution';
+  
+DrugSensitiveCurrent = {};
+DrugSensitiveCurrent = SubMEANConditions;
+DrugSensitiveCurrent = DrugSensitiveCurrent(1,:)';
+
+%ToDO: same length as other columns in table to export. first fill with NaN
+%values. or fill up with nan value afterwards...
+%VoltageMeanDrugSensCur = NaN(1,length(AllSolutions))
+%VoltageMeanDrugSensCur = num2cell(VoltageMeanDrugSensCur)
+% VoltageMeanDrugSensCur = {};
+ VoltageMeanDrugSensCur = MEANVoltageConditions(1,:)';
 
 %multiply data with -1 for demonstration
-SubMEANConditions =  cellfun(@(x) x*-1,SubMEANConditions,'un',0);
+%SubMEANConditions =  cellfun(@(x) x*-1,SubMEANConditions,'un',0);
+SubMEANConditionsAbs ={};
+SubMEANConditionsAbs =  cellfun(@(x) abs(x),SubMEANConditions,'un',0);
 SubMEANMinus85Cond = cellfun(@(x) x*-1,SubMEANMinus85Cond,'un',0);
 
 %table variables
@@ -306,7 +323,7 @@ CultivationSol = CultivationExp;
 DaysPostInj = DPIExp;
 CellIDRec = CellIDExp;
 Voltage = MEANVoltageConditions;
-MeanSTEPs = SubMEANConditions; % multiplied by -1
+MeanSTEPs = SubMEANConditionsAbs; 
 CurMinus85 = SubMEANMinus85Cond;
 LEAKMinus85 = LEAKMinus85;
 
