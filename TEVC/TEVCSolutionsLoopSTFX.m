@@ -8,7 +8,7 @@ function [AllSolutions, EndValSolutions, MeanAllSolutions,MeanVrev] = TEVCSoluti
 
 AllSolutions = []; AllSolutions = [];indSolutions = [];
 SolID = find(strcmpi(headers, 'AllSolutions')); % in which col are the solutions written down
-AllSolutions = raw(2:end,SolID ); % lists all solutions written in METADataSheet
+AllSolutions = raw(2:end,SolID); % lists all solutions written in METADataSheet
 fh = @(x) all(isnan(x(:))); %find all NaN values
 AllSolutions(cellfun(fh, AllSolutions)) = []; %replace NaNValues
 

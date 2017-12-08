@@ -32,8 +32,8 @@ close all; clc
 stimuli = 'ContRamp1550'; % stimuli used to be analyzed. so far only one protocol
 %Ramp80COnt
 makePlots = 1; % if 1 than make pl, if 0 then skip
-a1 = 15; %first file to be analyzed: (start with 2, because 1 is col header)
-a2 = a1% LastFile;%%LastFile;% LastFile; %for last File script must run once LastFile ; %(last file to be analyzed; either number or variable LastFile;)
+a1 = 8; %first file to be analyzed: (start with 2, because 1 is col header)
+a2 = 8;%LastFile;%%LastFile;% LastFile; %for last File script must run once LastFile ; %(last file to be analyzed; either number or variable LastFile;)
 
 %%%%%%%%
 
@@ -150,18 +150,35 @@ AllStimuliBlocks = (find(strcmpi(ephysData.(name).protocols, stimuli)));
 Aall = A;
 Vall = V;
 
-
-%figure()
-%plot(Vall)
+%toDo: test this
+      SlopeVall = [];
+  for j = 1:size(Vall,2)
+        for i = 1:length(Vall)-1
+        SlopeVall(i,j) = Vall(i+1,j) - Vall(i,j);
+        end
+  end
+    
+% figure()
+% plot(SlopeVall)
 %
 %current at -85 mv, get beginning and end of stimulus
 % TODO: make control plot that STart and End are correct
+
 StartMinus85 = [];
 EndeMinus85 = [];
 for i=1:size(Vall,2)
-StartMinus85(i) = find([Vall(:,i)] < -0.078,1,'first');
-EndeMinus85(i) = find([Vall(:,i)] < -0.095,1,'first');
+StartMinus85(i) = find([SlopeVall(:,i)] < -0.002,1,'first'); 
+EndeMinus85(i) = find([SlopeVall(1:StartMinus85(i)*6,i)] < -0.002,1,'last');
 end
+
+% figure()
+% plot(StartMinus85)
+% hold on
+% plot(EndeMinus85)
+%print
+reminder = 'calculate Average from Start Minus85'
+% ToDO: calculate Average Start Minus and if StartMinus85(EndValSolutions) < Avg
+% break
 
 VallRamp = []; AallRamp = [];
 VallRamp = Vall(440:1440,:);
@@ -172,8 +189,8 @@ VallRampShort = [];
 
 Vrev=[];
 for i=1:size(Vall,2)
-CalVrevStart(i) = find([AallRamp(:,i)] > -200E-9,1,'first');
-CalVrevEnde(i) = find([AallRamp(:,i)] >  150E-9,1,'first');
+CalVrevStart(i) = find([AallRamp(:,i)] > -150E-9,1,'first');
+CalVrevEnde(i) = find([AallRamp(:,i)] >  80E-9,1,'first');
 VallRampShort = VallRamp(CalVrevStart(i):CalVrevEnde(i),i); % cannot save, because different length
 AallRampShort = AallRamp(CalVrevStart(i):CalVrevEnde(i),i);
 p = polyfit(VallRampShort,AallRampShort,1);
@@ -245,10 +262,13 @@ RationMean = []; DeltaMean = []; StartSolution ={};TestSolution ={};MeanStart = 
 VrevStart = []; VrevTest = []; DeltaVrev = [];
 InjectionMixExp = {}; RatingExp ={}; CultivationExp = {}; DPIExp ={}; CellIDExp = {};
  
+
+%change ratio; 1- test/start
 for i = 2:length(SortEndOfSolution) % starts at 2, so i-1 to get the first value
     MeanStart(i-1,1)= SortMeanOfSolutions(i-1); 
     MeanTest(i-1,1) = SortMeanOfSolutions(i);  
-   RationMean(i-1,1) =  SortMeanOfSolutions(i)/SortMeanOfSolutions(i-1);
+  % RationMean(i-1,1) =  (SortMeanOfSolutions(i-1)-SortMeanOfSolutions(i))/SortMeanOfSolutions(i-1);
+     RationMean(i-1,1) =  (SortMeanOfSolutions(i)/SortMeanOfSolutions(i-1));
      DeltaMean(i-1,1) =  SortMeanOfSolutions(i)-SortMeanOfSolutions(i-1);
   StartSolution(i-1,1) = SortAllSolutions(i-1); % divide test solution with previous solution (start solution)
    TestSolution(i-1,1) =  SortAllSolutions(i); % TestSolution
@@ -301,6 +321,17 @@ AalluA = Aall*(1*10^6);
 LegendInj = InjectionMixExp(1);
 LegendInj = cell2mat(LegendInj);
 name2 = cell2mat(CellID);
+
+MeanCurNaGlu = [];
+MeanCurAmil = [];
+MeanVolNaGlu = [];
+MeanVolAmil = [];
+
+MeanCurNaGlu = (A(:,179:181))
+MeanCurAmil = mean(A(:,202:204))
+
+
+
 
 if makePlots == 1
 %figure()
