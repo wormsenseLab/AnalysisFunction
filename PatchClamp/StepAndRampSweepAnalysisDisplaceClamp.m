@@ -54,18 +54,17 @@ end
 close all; clc
 
 %%% hardcoding part:
-name = 'STF094'; % name of recording. placed into varaibel fiels names%
+name = 'STF105'; % name of recording. placed into varaibel fiels names%
 stimuli = 'FiveStep'; 
-OnlyMechano = 0; % if = 0, then FALCON, if 1, then ForceClamp Only 
-ReadFromSheet = 1; % if = 0, then command promp to delete block, if 1, then read from MetaDataSheet 
+%OnlyMechano = 0; % if = 0, then FALCON, if 1, then ForceClamp Only 
+ReadFromSheet = 0; % if = 0, then command promp to delete block, if 1, then read from MetaDataSheet 
 % protocol names:
 % Single protocols: Step and Ramp-Hold; 
 % Five sweeps per protocol:FiveStep, FiveRampHold; does not work with alternative names
 %%%%%
 
 Filenumber = 1; % wil be used to extract sampling freuqnecy; first file loaded, maybe change (ToDO: check if I did it)
-
-    
+   
 Files = 1:length(ephysData.(name).protocols);% load all protocols  
 
 % load all data from all protocols 
@@ -225,8 +224,6 @@ end
 % MeanForceVer = MeanForce'
 % 
 % StiffnessWorm = MeanIndentationVer\MeanForceVer % is doing a leastsquarefit
-
-
 
 [SlopeActu,MaxZeroSlopeActu,StdZeroSlopeActu,MaxZeroActu,StdZeroActu,MaxActuSensorPlateau,StdActuSensorPlateau,CellMaxActuFirst] = SlopeThreshold(ActuSensor);  
 
@@ -794,10 +791,10 @@ CellMinOffAVGSortForce(i) = CellMinOffAVGShortSortForce(i)+MeanCellMaxActuFirst(
 AvgMaxCurrentOffAVGSortForce(i) = mean(MeanTracesSortForce(CellMinOffAVGSortForce(i)-5:CellMinOffAVGSortForce(i)+5,i));
 end
 
-AvgMaxCurrentAVG = AvgMaxCurrentAVG*-1
+AvgMaxCurrentAVG = AvgMaxCurrentAVG*-1;
 AvgMaxCurrentAVG = AvgMaxCurrentAVG';
-AvgMaxCurrentOffAVG=AvgMaxCurrentOffAVG*-1
-AvgMaxCurrentOffAVG = AvgMaxCurrentOffAVG'
+AvgMaxCurrentOffAVG=AvgMaxCurrentOffAVG*-1;
+AvgMaxCurrentOffAVG = AvgMaxCurrentOffAVG';
 MeanIndentationVer=MeanIndentation';
 MeanForceVer=MeanForce';
 AvgMaxCurrentMinus = AvgMaxCurrentMinus';
@@ -805,7 +802,7 @@ AvgMaxCurrentMinusOff =AvgMaxCurrentMinusOff';
 
 AvgMaxCurrentAVGSortForce = AvgMaxCurrentAVGSortForce *-1;
 AvgMaxCurrentAVGSortForce = AvgMaxCurrentAVGSortForce';
-AvgMaxCurrentOffAVGSortForce =AvgMaxCurrentOffAVGSortForce*-1
+AvgMaxCurrentOffAVGSortForce =AvgMaxCurrentOffAVGSortForce*-1;
 AvgMaxCurrentOffAVGSortForce = AvgMaxCurrentOffAVGSortForce';
 
 %figure()
@@ -865,8 +862,6 @@ xlabel('Indentation (um)')
 % %legend(Files(j))  % include legend again
 % end
 end
-
-
 
 else
 scatter(MeanIndentation, AverageMaxCurrentMinusppA,'LineWidth',2)
@@ -1099,11 +1094,11 @@ fclose(fid);
 dlmwrite(filename, ExportMeanSameInd, '-append', 'delimiter', '\t'); %Use '\t' to produce tab-delimited files.
 
 
-filename = sprintf('StepSameIndOFF-%s.csv',name) ;
-fid = fopen(filename, 'w');
-fprintf(fid, 'NrAVGperIndentation-%s,SameIndCurOFF-%s, SameIndCurOFFCOPY-%s \n',name,name,name); %, MergeInd,MeanSameIndCurrent, asdasd, ..\n); %\n means start a new line
-fclose(fid);
-dlmwrite(filename, ExportMeanSameIndOFF, '-append', 'delimiter', '\t'); %Use '\t' to produce tab-delimited files.
+% filename = sprintf('StepSameIndOFF-%s.csv',name) ;
+% fid = fopen(filename, 'w');
+% fprintf(fid, 'NrAVGperIndentation-%s,SameIndCurOFF-%s, SameIndCurOFFCOPY-%s \n',name,name,name); %, MergeInd,MeanSameIndCurrent, asdasd, ..\n); %\n means start a new line
+% fclose(fid);
+% dlmwrite(filename, ExportMeanSameIndOFF, '-append', 'delimiter', '\t'); %Use '\t' to produce tab-delimited files.
 
 filename = sprintf('StepSortForce-%s.csv',name) ;
 fid = fopen(filename, 'w');
@@ -1170,7 +1165,7 @@ FitMax =[];FitMaxForce = [];
 headers = raw(1,:);
 indFitMax = find(strcmpi(headers, 'ONFitMax(A)'));
 FitMax = raw(Stiffrow,indFitMax); %Stiffrow defined previously
-FitMax = cell2mat(FitMax);
+FitMax = cell2mat(FitMax)
 indFitMaxForce = find(strcmpi(headers, 'ONFitMaxForce(A)'));
 FitMaxForce = raw(Stiffrow,indFitMaxForce); 
 FitMaxForce = cell2mat(FitMaxForce);
@@ -1188,7 +1183,7 @@ AvgMaxCurrentNormInd = AvgMaxCurrentAVG/FitMax;
 AvgMaxCurrentNormForce = AvgMaxCurrentAVG/FitMaxForce;
 AvgMaxONCurrentNormSortForce = []; AvgMaxOFFCurrentNormSortForce = [];
 AvgMaxONCurrentNormSortForce = AvgMaxCurrentAVGSortForce/FitMaxCurSortForce;
-AvgMaxOFFCurrentNormSortForce= AvgMaxCurrentOffAVGSortForce/FitMaxOFFCurSortForce;
+AvgMaxOFFCurrentNormSortForce=  AvgMaxCurrentOffAVGSortForce/FitMaxOFFCurSortForce;
 
 %%xportNormTraces = [];
 ExportNormSortForce = [];

@@ -12,13 +12,17 @@ if loadFileMode  == 0; %
 elseif loadFileMode == 1
 [numbers, text, raw] = xlsread('Ephys-Meta-Sylvia.xlsx'); % be careful in which Folder saved.
 end
-
+%%
+%ToDO: redo analyis with all IV data.
+%[fileName,pathName] = uigetfile('*.*', 'Load file', 'MultiSelect', 'on'); 
+%[Numbers, Text, Raw] = xlsread([pathName, fileName]);
+ 
 
 %% Analysis Individual Recording 
 close all; clc
 
 %%% hardcoding part:
-name = 'STFX098'; % name of recording. placed into varaibel fiels names%
+name = 'STF119'; % name of recording. placed into varaibel fiels names%
 stimuli = 'IVStep'; 
 % protocol names:
 % Single protocols: Step and Ramp-Hold; 
@@ -161,8 +165,14 @@ figure()
  end
  
 % Avg over 3rd dimension (combine all series to one)
+% get sensitivity
+% calculate indentation
+
 AvgIVq = mean(ASubtract,3);
 ActuSensor = mean(ActuSensorB3D,3);
+
+
+
 
 figure()
 plot(Time, AvgIVq)
@@ -186,13 +196,55 @@ end
 
 
 
-      for i = 1:size(AvgIVq,2);
+     for i = 1:size(AvgIVq,2);
     Start(i) = find([ActuSensor(:,i)] > StartBase(i),1, 'first'); %% find cell, where 1st value is bigger than threshold; Onset On-Stimulus 
     Ende(i) = Start(i) + (fs/20);
    % EndeRamp(i)= StartOffBelow(i)-(0.300/interval); % Time= Points*interval
-      end
+     end
   
-       
+     %%%%%% ForceClampSignals %%%%%%%
+
+% to get Deflection of Cantilever: multiply with Sensitivity 
+% get Sensitivity from Notes Day of Recording  
+FindRowStiff = strcmpi(raw,name); % name = recorded cell
+[Stiffrow,col] = find(FindRowStiff,1); % Siffrow: row correasponding to recorded cell
+
+headers = raw(1,:);
+ind = find(strcmpi(headers, 'Sensitivity(um/V)')); % find col with Sensitivity
+Sensitivity = raw(Stiffrow,ind); 
+Sensitivity = cell2mat(Sensitivity);
+
+indStiffness = find(strcmpi(headers, 'Stiffness (N/m)'));
+Stiffness = raw(Stiffrow,indStiffness); 
+Stiffness = cell2mat(Stiffness);
+
+
+AvgCanti = []; BaseLineCanti =[]; AvgCantiSub = []; AvgCantiSubCor = [];
+AvgCanti = mean(Call3D,3);
+BaseLineCanti = mean(AvgCanti(1:0.04*fs,:));
+for i = 1:length(BaseLineCanti)
+AvgCantiSub(:,i) =  AvgCanti(:,i) - BaseLineCanti(i);
+AvgCantiSubCor(:,i) = AvgCantiSub(:,i) * Sensitivity;  %Sensitivity
+end
+
+figure()
+plot(AvgCantiSubCor)
+hold on
+plot(AvgCantiSub)
+
+Indentation = [];MeanIndentation =  [];Force = []; MeanForce = [];
+for i = 1:size(AvgCantiSubCor,2);
+    Indentation(:,i) = ActuSensor(:,i) - AvgCantiSubCor(:,i);
+    MeanIndentation(i) = mean(Indentation(Start(i)+0.01*fs:Ende(i)-0.01*fs,i));
+    Force(:,i) = AvgCantiSubCor(:,i)*Stiffness;% I kept it in uN, otherwise: CantiDefl(:,i)*10^-6 *Stiffness; 
+    MeanForce(i) = mean(Force(Start(i)+0.01*fs:Ende(i)-0.01*fs,i));   
+end
+
+
+figure()
+plot(AvgCantiSub)
+     
+     
 absMeanTraces = [];AvgMaxCurrentAVGMinus=[]; AvgMaxCurrentAVG=[];CellMinAVG=[];MinAVG=[];
  MinAOffAVG=[];AVGCellMinOff=[];CellMinOffAVGShort=[];
 MaxActuSensorOnAVG =[];CellMaxActuFirstAVG = []; StartOffBelowShortAVG =[];StartOffBelowAVG =[];
@@ -200,9 +252,10 @@ AvgMaxCurrentOffAVG = [];
 
 
 MaxASub = []; StdASub =[]
-MaxASub = max(AvgIVq(1500:1600,:,:));
+MaxASub = max(AvgIVq(1500:1600,:,:)); %TODO: not hardcoded
 StdASub = std(AvgIVq(1500:1600,:,:));
 %ASubtract = bsxfun(@minus, Aall3D(:,:,:), ALeak);
+
 
 ThresholdCur = MaxASub + 2*StdASub;
 
@@ -223,13 +276,19 @@ end
 
 
 Voltage=[-100;-80;-60;-40;-20;0;20;40;60;80];
-AvgMaxCurrentAVG = AvgMaxCurrentAVG'
+NormTOIndenAvgMaxOn = [];
+for i = 1:length(AvgMaxCurrentAVG)
+NormTOIndenAvgMaxOn(i) =  AvgMaxCurrentAVG(i)/MeanIndentation(i);
+end
+AvgMaxCurrentAVG = AvgMaxCurrentAVG';
+NormTOIndenAvgMaxOn = NormTOIndenAvgMaxOn';
+
 
 headers = raw(1,:);
 FindRowIndCellId = strcmpi(raw,name); % name = recorded cell
 [RowCellId,col] = find(FindRowIndCellId,1);
 Rs = []; TermRsI = []; MinusRs =[];
-indRs = find(strcmpi(headers, 'Rs(MOhm)')); % find col with Sensitivity
+indRs = find(strcmpi(headers, 'Rs(MOhm)')); % find col with Rs(MOhm)
 Rs = raw(RowCellId,indRs); 
 Rs = cell2mat(Rs)
 RsinOHM = Rs*10E6;
@@ -253,11 +312,11 @@ plot(AvgIVq)
 save(sprintf('IVSteps-%s.mat',name)); %save(sprintf('%sTEST.mat',name))
 
 ExportIVSteps = [];
-ExportIVSteps = [Voltage,VcorInMV,AvgMaxCurrentAVG];
+ExportIVSteps = [Voltage,VcorInMV,AvgMaxCurrentAVG,NormTOIndenAvgMaxOn];
 
 filename = sprintf('IVSteps-%s.csv',name) ;
 fid = fopen(filename, 'w');
-fprintf(fid, 'Vcom-%s, Vcorrected-%s, AvgMaxCurON-%s \n',name,name,name); %, MergeInd,MeanSameIndCurrent, asdasd, ..\n); %\n means start a new line
+fprintf(fid, 'Vcom-%s, Vcorrected-%s, AvgMaxCurON-%s, NormtoIndON-%s \n',name,name,name,name); %, MergeInd,MeanSameIndCurrent, asdasd, ..\n); %\n means start a new line
 fclose(fid);
 dlmwrite(filename, ExportIVSteps , '-append', 'delimiter', '\t'); %Use '\t' to produce tab-delimited files.
 

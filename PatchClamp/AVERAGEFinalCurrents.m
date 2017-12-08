@@ -14,7 +14,7 @@ end
 %%
 
 name = 'TU2769-';
-x = 0.4; % um of Indentation Average for MergeInd
+x = 0.8; % um of Indentation Average for MergeInd
 y = 0.2; % uN of Indentation Average
 
 nameInd = 'AVGInd';
