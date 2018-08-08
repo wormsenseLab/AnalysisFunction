@@ -1,4 +1,4 @@
-function [LeakA, ASubtract, AvgMaxCurrent,AvgMaxCurrentMinus,AvgMaxCurrentOff,AvgMaxCurrentMinusOff,Start,StartOffBelow,Ende,EndeOff,ASubtractAvg,LengthRamp,LengthInms,EndeRamp,StartOffBelowShort,ActuSensorAvg] = AnalyzeCurrent(CellSlopeActuFirst,CellSlopeActuLast, isFiveSine, isFiveStep,isStep,isFifteenStep,ActuSensor,StartBase,Aall,fs,SlopeActu,BelowPlateau,CellMaxActuFirst,interval,isFivePosStep,isSixteenStep);%tf,isStep, SteigungAbs,
+function [LeakA, ASubtract, AvgMaxCurrent,AvgMaxCurrentMinus,AvgMaxCurrentOff,AvgMaxCurrentMinusOff,Start,StartOffBelow,Ende,EndeOff,ASubtractAvg,LengthRamp,LengthInms,EndeRamp,StartOffBelowShort,ActuSensorAvg] = AnalyzeCurrentNoise(CellSlopeActuFirst,CellSlopeActuLast, isFiveSine, isFiveStep,isStep,isFifteenStep,ActuSensor,StartBase,Aall,fs,SlopeActu,BelowPlateau,CellMaxActuFirst,interval,isFivePosStep,isSixteenStep);%tf,isStep, SteigungAbs,
 
 LeakA = []; ASubtract = []; MinA = []; CellMin = [];AvgMaxCurrent = [];AvgMaxCurrentMinus = [];Start=[];  Ende = []; EndeOff = [];  
 CellMinOff = [];AvgMaxCurrentOff = [];AvgMaxCurrentMinusOff = []; 
@@ -31,8 +31,7 @@ else
 %%%%%% Subtract leak current
 
   for i = 1:size(Aall,2);
- %LeakA(i) = mean(Aall(Start(i)-0.015*fs:Start(i)-0.005*fs,i));  %%%
-  LeakA(i) = mean(Aall(Start(i)-0.02*fs:Start(i),i));  %%%
+ LeakA(i) = mean(Aall(Start(i)-0.02*fs:Start(i),i));  %%%
  ASubtract(:,i) = Aall(:,i) - LeakA(i); %%%
   end
   

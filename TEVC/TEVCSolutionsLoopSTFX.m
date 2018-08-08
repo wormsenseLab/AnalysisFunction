@@ -32,7 +32,7 @@ for i = 1:length(AllSolutions)
         MeanVrev{i} = NaN;
      else
   MeanAllSolutions{i}  = mean(mean(Aall(StartMinus85+10:EndeMinus85-10,EndValSolutions{i}-2:EndValSolutions{i})));%ERROR: mostly, if max(EndValSolutionsNUM) is bigger than size(A,2); then error in METAData; calculate mean of three Values: Endvalue entered into the MetaDatasheet Minus 2. If value is 20, using rows 18:20
-    MeanVrev{i}  = mean(Vrev(EndValSolutions{i}-2:EndValSolutions{i}));
+    MeanVrev{i}  = nanmean(Vrev(EndValSolutions{i}-2:EndValSolutions{i}));
     end  
 end
 %MeanAllSolutionsTEST = mean(mean(Aall(StartMinus85+10:EndeMinus85-10,end-2:end)));

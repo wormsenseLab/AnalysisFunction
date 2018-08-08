@@ -40,14 +40,64 @@ ReadFromSheet = 0; % if = 0, then command promp to delete block, if 1, then read
 %%%%%
 
 %Aall = current
-%Ball = 
-%Call = 
-%Dall = 
+%Ball = Actuator
+%Call = Cantilever
+%Dall = ActuatorSetpoint
 
-[ActuSensor, fs,interval, Time, Aall, Ball, Call, Dall, Files, isFiveStep, isFiveRamp, isStep, isFiveSine, isFifteenStep, isIVStep] = SortFalconData(name,stimuli,ephysData, ReadFromSheet);
+[ActuSensor, fs,interval, Time, Aall, Ball, Call, Dall, Files, isSixteenStep, isFiveStep, isFiveRamp, isStep, isFiveSine, isFifteenStep, isIVStep] = SortFalconData(name,stimuli,ephysData, ReadFromSheet);
 
-%
 [SlopeActu,MaxZeroSlopeActu,StdZeroSlopeActu,MaxZeroActu,StdZeroActu,MaxActuSensorPlateau,StdActuSensorPlateau,CellMaxActuFirst] = SlopeThreshold(ActuSensor);  
 
+ %CellMaxActuFirst(i) = find([ActuSensor(:,i)] == MaxActuSensorOn(i),1,'first'); 
+
+%calculate threshold (needed to determine the Onset (Start) of the Stimulus)
+StartBase = [];
+if isFiveStep == 1 || isStep == 1 || isFifteenStep == 1 || isIVStep == 1;
+   StartBase = MaxZeroActu + 4*StdZeroActu;   %% play around and modifz 
+else
+   StartBase = MaxZeroSlopeActu + 4*StdZeroSlopeActu; %
+end
+
+%calculate beginning and end of sine function (if no other stimuli is
+%present
+CellSlopeActuFirst = [];
+CellSlopeActuLast = [];
+for i = 1:size(ActuSensor,2);
+CellSlopeActuFirst(i) = find([ActuSensor(:,i)] > StartBase(i),1,'first')
+CellSlopeActuLast(i) = find([ActuSensor(:,i)] > StartBase(i),1,'last')
+end
+
+
+%[LeakA, ASubtract, AvgMaxCurrent,AvgMaxCurrentMinus,AvgMaxCurrentOff,AvgMaxCurrentMinusOff,Start,StartOffBelow,Ende,EndeOff,ASubtractAvg,LengthRamp,LengthInms,EndeRamp,StartOffBelowShort,ActuSensorAvg] = AnalyzeCurrent(CellSlopeActuFirst,CellSlopeActuLast, isFiveSine, isFiveStep,isStep,isFifteenStep,ActuSensor,StartBase,Aall,fs,SlopeActu,BelowPlateau,CellMaxActuFirst,interval);
+
+%%
+Fs = fs;            % Sampling frequency                    
+T = 1/Fs;             % Sampling period       
+L = 1500;             % Length of signal
+t = (0:L-1)*T;        % Time vector
+
+Y = fft(Aall(:,4));
+
+P2 = abs(Y/L);
+P1 = P2(1:L/2+1);
+P1(2:end-1) = 2*P1(2:end-1)
+
+f = Fs*(0:(L/2))/L;
 figure()
-plot()
+plot(f,P1) 
+title('Single-Sided Amplitude Spectrum of X(t)')
+xlabel('f (Hz)')
+ylabel('|P1(f)|')
+
+%%
+figure()
+plot(Time, Aall(:,1))
+figure()
+plot(Aall(:,2))
+figure()
+plot(Aall(:,3))
+figure()
+plot(Aall(:,4))
+figure()
+plot(SlopeActu(:,2))
+

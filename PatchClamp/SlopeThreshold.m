@@ -14,13 +14,14 @@ function [SlopeActu,MaxZeroSlopeActu,StdZeroSlopeActu,MaxZeroActu,StdZeroActu,Ma
         
 for i = 1:size(ActuSensor,2);
    AvgOnsetSlopeActu(i)=  mean(SlopeActu(5:100,i)); % B = ActuSensor
-   MaxZeroSlopeActu(i)= max(SlopeActu(5:100,i));
+   MaxZeroSlopeActu(i)= max(SlopeActu(5:100,i)); 
    StdZeroSlopeActu(i)= std(SlopeActu(5:100,i));
    AvgOnsetActu(i)=  mean(ActuSensor(1:100,i));
    MaxZeroActu(i)= max(ActuSensor(1:100,i)); 
    StdZeroActu(i)= std(ActuSensor(1:100,i));
    MaxActuSensorOn(i) = max(ActuSensor(:,i));
    CellMaxActuFirst(i) = find([ActuSensor(:,i)] == MaxActuSensorOn(i),1,'first'); 
+  
 end
 ActuSensorPlateauAvg = []; AvgActuSensorPlateau = []; MaxActuSensorPlateau = [];StdActuSensorPlateau=[];
 

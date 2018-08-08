@@ -1,4 +1,4 @@
-function [ActuSensor, fs,interval, Time, Aall, Ball, Call, Dall, Files, isFiveStep, isFiveRamp, isStep, isFiveSine, isFifteenStep, isIVStep] = SortFalconData(name,stimuli,ephysData, ReadFromSheet)
+function [ActuSensor, fs,interval, Time, Aall, Ball, Call, Dall, Files, isSixteenStep, isFiveStep, isFiveRamp, isStep, isFiveSine, isFifteenStep, isIVStep, isFivePosStep] = SortFalconData(name,stimuli,ephysData, ReadFromSheet)
 
 Filenumber = 1; % wil be used to extract sampling freuqnecy; first file loaded, maybe change (ToDO: check if I did it)
    
@@ -44,6 +44,8 @@ isRamp = strcmp('Ramp-Hold',stimuli);
 isFiveSine = strcmp('FiveSine',stimuli);
 isFifteenStep = strcmp('FifteenStep',stimuli); 
 isIVStep = strcmp('IVStep',stimuli); 
+isSixteenStep = strcmp('SixteenStep',stimuli); 
+isFivePosStep = strcmp('FivePosStep',stimuli);
 
 % showing in command prompt: AllStimuli = patchmaster Filenumber;
 % this helps to identify which "five Block to delete"

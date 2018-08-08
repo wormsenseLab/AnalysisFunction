@@ -13,7 +13,7 @@
 clear all; close all; clc;
 ephysData=ImportPatchData();
 
-% is in the patchfunction folder ephys
+% Import Function from Samata Katta
 %% Load Meta Data TEVC
 % load notes to get several values automatically needed for the conversion of the signals
 loadFileMode = 0; %0 opens dialpg window to choose file; 1 loads file with specific name
@@ -31,12 +31,15 @@ close all; clc
 %%% hardcoding part: %%%%%%%
 stimuli = 'ContRamp1550'; % stimuli used to be analyzed. so far only one protocol
 %Ramp80COnt
-makePlots = 1; % if 1 than make pl, if 0 then skip
-a1 = 8; %first file to be analyzed: (start with 2, because 1 is col header)
-a2 = 8;%LastFile;%%LastFile;% LastFile; %for last File script must run once LastFile ; %(last file to be analyzed; either number or variable LastFile;)
-
+makePlots = 0; % if 1 than make pl, if 0 then skip
+a1 = 2; %first file to be analyzed: (start with 2, because 1 is col header)
+a2 = LastFile;% LastFile; %for last File script must run once LastFile ; %(last file to be analyzed; either number or variable LastFile;
 %%%%%%%%
-
+% to make a before (x1), drug (x2) and wash up (x3) trace plot, put number
+% of last sries when drug used here
+x1 = 2;
+x2 = 2;
+x3 = 3;
 %%%%%%11
 AllCol = []; headers = [];indCellID = [];
 headers = raw(1,:); % saw 1st row of raw data as headers
@@ -159,16 +162,18 @@ Vall = V;
   end
     
 % figure()
-% plot(SlopeVall)
+% plot(SlopeVall(:,392))
 %
 %current at -85 mv, get beginning and end of stimulus
 % TODO: make control plot that STart and End are correct
 
 StartMinus85 = [];
 EndeMinus85 = [];
+EndeRamp = [];
 for i=1:size(Vall,2)
 StartMinus85(i) = find([SlopeVall(:,i)] < -0.002,1,'first'); 
 EndeMinus85(i) = find([SlopeVall(1:StartMinus85(i)*6,i)] < -0.002,1,'last');
+EndeRamp(i) = find([SlopeVall(:,i)] < -0.002,1,'last');
 end
 
 % figure()
@@ -181,16 +186,28 @@ reminder = 'calculate Average from Start Minus85'
 % break
 
 VallRamp = []; AallRamp = [];
-VallRamp = Vall(440:1440,:);
-AallRamp = Aall(440:1440,:);
+VallRamp = Vall(EndeMinus85(1)+250:EndeRamp(1),:);
+AallRamp = Aall(EndeMinus85(1)+250:EndeRamp(1),:);
 CalVrevStart = [];
 CalVrevEnde = [];
 VallRampShort = [];
 
+% figure()
+% plot(AallRamp)
+
 Vrev=[];
 for i=1:size(Vall,2)
-CalVrevStart(i) = find([AallRamp(:,i)] > -150E-9,1,'first');
-CalVrevEnde(i) = find([AallRamp(:,i)] >  80E-9,1,'first');
+if AallRamp(:,i) >  120E-9 == 0 
+    CalVrevEnde(i) = NaN;
+    CalVrevStart(i) = NaN;
+    Vrev(i) = NaN;
+elseif AallRamp(:,i) <  -100E-9 == 0
+    CalVrevEnde(i) = NaN;
+    CalVrevStart(i) = NaN;
+    Vrev(i) = NaN;
+else
+CalVrevEnde(i) = find([AallRamp(:,i)] >  120E-9,1,'first');
+CalVrevStart(i) = find([AallRamp(:,i)] > -100E-9,1,'first');
 VallRampShort = VallRamp(CalVrevStart(i):CalVrevEnde(i),i); % cannot save, because different length
 AallRampShort = AallRamp(CalVrevStart(i):CalVrevEnde(i),i);
 p = polyfit(VallRampShort,AallRampShort,1);
@@ -200,6 +217,7 @@ p = polyfit(VallRampShort,AallRampShort,1);
 % b = p(2)
 % m = p(1)
 Vrev(i) = -p(2)/p(1);
+end
 end
  
 
@@ -250,11 +268,11 @@ SortAllSolutions = SortAllSolutions';
 SortMeanVrev = TransMeanVrevNUM(sorted_index);
 SortMeanVrev = SortMeanVrev';
 
-%Remove NAN values from array
+%Remove additional NAN values from array
 SortAllSolutions(cellfun(@(SortAllSolutions) any(isnan(SortAllSolutions)),SortAllSolutions)) = [];
 SortMeanOfSolutions(isnan(SortMeanOfSolutions)) = [];
 SortEndOfSolution(isnan(SortEndOfSolution)) = [];
-SortMeanVrev(isnan(SortMeanVrev)) = []; 
+SortMeanVrev(isnan(SortMeanVrev)) = []; %ToDo: can be a problem,if allSolutions longer 
 
 %calculate Mean & Ration of TestSolution (Solution 2) from StartSolution (Solution 1)
 RationMean = []; DeltaMean = []; StartSolution ={};TestSolution ={};MeanStart = [];MeanTest = [];
@@ -262,7 +280,6 @@ RationMean = []; DeltaMean = []; StartSolution ={};TestSolution ={};MeanStart = 
 VrevStart = []; VrevTest = []; DeltaVrev = [];
 InjectionMixExp = {}; RatingExp ={}; CultivationExp = {}; DPIExp ={}; CellIDExp = {};
  
-
 %change ratio; 1- test/start
 for i = 2:length(SortEndOfSolution) % starts at 2, so i-1 to get the first value
     MeanStart(i-1,1)= SortMeanOfSolutions(i-1); 
@@ -277,9 +294,15 @@ for i = 2:length(SortEndOfSolution) % starts at 2, so i-1 to get the first value
    CultivationExp(i-1,1) = Cultivation(1);
    DPIExp(i-1,1) = DPI(1);
     CellIDExp(i-1,1) = CellID(1);
+    if numel(SortMeanVrev) == length(SortEndOfSolution)
     VrevStart(i-1,1)= SortMeanVrev(i-1); 
     VrevTest(i-1,1) = SortMeanVrev(i);
     DeltaVrev(i-1,1) =  SortMeanVrev(i)-SortMeanVrev(i-1);
+    else
+         VrevStart(i-1,1)= NaN;
+         VrevTest(i-1,1) = NaN;
+         DeltaVrev(i-1,1) = NaN;
+    end
 end
 
 RatingExp = cell2mat(RatingExp);
@@ -327,10 +350,9 @@ MeanCurAmil = [];
 MeanVolNaGlu = [];
 MeanVolAmil = [];
 
-MeanCurNaGlu = (A(:,179:181))
-MeanCurAmil = mean(A(:,202:204))
-
-
+% MeanCurNaGlu = (A(:,179:181));
+% MeanCurAmil = mean(A(:,202:204));
+% 
 
 
 if makePlots == 1
@@ -347,8 +369,39 @@ plot(VrevmV,'o')
  legend(name2)
 ylabel('Reversal Potential (mV)')
 xlabel('Points')
+
  figure()
- plot(AalluA(:,5))
+ hold on
+for i = 1:length(SortEndOfSolution)
+ plot(AalluA(:,SortEndOfSolution(i)-2:SortEndOfSolution(i)))
+ % legend(EndValSolutionsNUM(i))
+ hold on
+end
+
+ figure()
+ plot(AalluA(:,x1-2:x1),'b')
+ % legend(EndValSolutionsNUM(i))
+ hold on
+ plot(AalluA(:,x2-2:x2), 'r')
+ legend(name2)
+  hold on
+plot(AalluA(:,x3-2:x3), 'c')
+
+
+
+ Meanx1 = []; MeanVolx1 = [];
+ Meanx1 = mean(A(:,x1-2:x1),2);
+ MeanVolx1 = mean(V(:,x1-2:x1),2);
+ 
+ Meanx2 = []; MeanVolx2 = [];
+ Meanx2 = mean(A(:,x2-2:x2),2);
+ MeanVolx2 = mean(V(:,x2-2:x2),2);
+ 
+ Meanx3 = []; MeanVolx3 = [];
+ Meanx3 = mean(A(:,x3-2:x3),2);
+ MeanVolx3 = mean(V(:,x3-2:x3),2);
+ 
+ 
 %  figure()
 % plot(AalluA(:,1:3))
 % hold on

@@ -5,7 +5,7 @@
 %%
 clear all; close all; clc;
 
-loadFileMode = 1; %0 opens dialpg window to choose file; 1 loads file with specific name
+loadFileMode = 0; %0 opens dialpg window to choose file; 1 loads file with specific name
 %change here,  if you want to select a file or load always the same
 if loadFileMode  == 0; % 
 [filename,pathname] = uigetfile('*.*', 'Load file', 'MultiSelect', 'on'); 
@@ -39,7 +39,6 @@ SeparateByInj{1,i}(1,:) = headers;
   end
 end
 end
-
 
 
 %work in progress; stupidly hardcoded. way to simplify it? 

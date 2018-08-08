@@ -1,4 +1,4 @@
-function [ActuSetPoint,CantiDefl,MeanIndentation,Force,MeanForce,Indentation,normCantiDefl,allRiseTime,allOvershoot] = AnalyzeForceClamp(interval,Start,isFiveStep,isStep,isFifteenStep,Dall,Call,EndeOff,ActuSensor,Sensitivity,Stiffness,fs);
+function [ActuSetPoint,CantiDefl,MeanIndentation,Force,MeanForce,Indentation,normCantiDefl,allRiseTime,allOvershoot] = AnalyzeForceClamp(interval,Start,isFiveStep,isStep,isFifteenStep,Dall,Call,EndeOff,ActuSensor,Sensitivity,Stiffness,fs,isSixteenStep,isFivePosStep);
 %Dall = concatenated SetPointsignal
 
 
@@ -35,10 +35,10 @@ end
 % Calculating Force Signal: Cantilever Deflection * Stiffness 
 
 MeanIndentation = []; Indentation = []; Force = []; MeanForce = [];
-if isFiveStep == 1 || isStep == 1 || isFifteenStep == 1;
+if isFiveStep == 1 || isStep == 1 || isFifteenStep == 1 || isSixteenStep || isFivePosStep == 1;
     for i = 1:size(Call,2);
     Indentation(:,i) = ActuSensor(:,i) - CantiDefl(:,i);
-    MeanIndentation(i) = mean(Indentation(Start(i):Start(i)+0.28/interval,i));
+    MeanIndentation(i) = mean(Indentation(Start(i)+0.03/interval:Start(i)+0.28/interval,i));
     Force(:,i) = CantiDefl(:,i)*Stiffness;% I kept it in uN, otherwise: CantiDefl(:,i)*10^-6 *Stiffness; 
     MeanForce(i) = mean(Force(Start(i):Start(i)+0.28/interval,i));
     end

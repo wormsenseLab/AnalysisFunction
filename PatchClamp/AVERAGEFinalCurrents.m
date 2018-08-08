@@ -13,8 +13,8 @@ elseif loadFileMode == 1
 end
 %%
 
-name = 'TU2769-';
-x = 0.8; % um of Indentation Average for MergeInd
+name = 'GN651-';
+x = 0.5; % um of Indentation Average for MergeInd
 y = 0.2; % uN of Indentation Average
 
 nameInd = 'AVGInd';
@@ -48,7 +48,6 @@ protLocSortForce = find(strncmp(protNameSortForce,text,12));
 protLocONCurSortForce = find(strncmp(protNameONCurSortForce,text,length(protNameONCurSortForce))); %length(protName)
 protLocNormONSortForce = find(strncmp(protNameNormONSortForce,text,length(protNameNormONSortForce))); 
 
-
 Indentation = []; NormOnCurInd = []; OnCurrent = [];
 Force = []; NormOnCurForce = []; ForceSortForce =[]; ONCurrentSortForce =[];
 NormOnCurSortForce =[];
@@ -61,6 +60,7 @@ headersNormOnCurForce = {};
 headersForceSortForce = {};
 headersONCurSortForce = {};
 headersNormONSortForce = {};
+
 
 for i=1:length(protLoc);
    Indentation(:,i) = numbers(:,protLoc(i));
@@ -79,7 +79,7 @@ for i=1:length(protLoc);
    ONCurrentSortForce(:,i) = numbers(:,protLocONCurSortForce(i));
    headersONCurSortForce{i} = text(:,protLocONCurSortForce(i)); 
    NormOnCurSortForce(:,i) = numbers(:,protLocNormONSortForce(i));
-   headersNormONSortForce{i} = text(:,protLocNormONSortForce(i)); 
+  headersNormONSortForce{i} = text(:,protLocNormONSortForce(i)); 
 end
 
 
@@ -201,6 +201,7 @@ for k = 1:length(MergeInd);
 FinalMeanNormCurrent(k) = nanmean(SortTransNormOnCurInd(FindSameInd(:,k))); %average with same indentation
 FinalMeanIndentation(k) = nanmean(SortInd(FindSameInd(:,k))); %average  with same indentation
 FinalSTDNormCurrent(k) = nanstd(SortTransNormOnCurInd(FindSameInd(:,k))); %average with same indentation
+%FinalSTDNormCurrent(k) = nanstd(SortTransNormOnCurInd(FindSameInd(:,k)))/sqrt(lenth());
 FinalSTDIndentation(k) = nanstd(SortInd(FindSameInd(:,k))); 
 FinalMeanOnCurrent(k) = mean(SortOnCurrent(FindSameInd(:,k))); 
 FinalSTDOnCurrent(k) = nanstd(SortOnCurrent(FindSameInd(:,k))); 
@@ -214,13 +215,18 @@ end
 FinalMeanNormCurrent = FinalMeanNormCurrent';
 FinalMeanIndentation =FinalMeanIndentation';
 FinalSTDNormCurrent = FinalSTDNormCurrent';
+FinalSTDNormCurrent = FinalSTDNormCurrent/sqrt(length(FinalSTDNormCurrent));%change to SEM
 FinalSTDIndentation = FinalSTDIndentation';
+FinalSTDIndentation = FinalSTDIndentation/sqrt(length(FinalSTDIndentation));%change to SEM
 FinalMeanOnCurrent = FinalMeanOnCurrent';
 FinalSTDOnCurrent = FinalSTDOnCurrent';
+FinalSTDOnCurrent = FinalSTDOnCurrent/sqrt(length(FinalSTDOnCurrent));%change to SEM
 FinalMeanForce = FinalMeanForce';
 FinalSTDForce = FinalSTDForce';
+FinalSTDForce = FinalSTDForce/sqrt(length(FinalSTDForce));%change to SEM;
 FinalMeanNormCurForce = FinalMeanNormCurForce';
 FinalSTDNormCurForce =FinalSTDNormCurForce';
+FinalSTDNormCurForce =FinalSTDNormCurForce/sqrt(length(FinalSTDNormCurForce));%change to SEM;
 
 
 %calculated for sorted Force
@@ -240,10 +246,15 @@ FinalSTDNormCurForce =FinalSTDNormCurForce';
 
 FinalMeanNormCurSortForce = FinalMeanNormCurSortForce';
 FinalSTDNormCurSortForce = FinalSTDNormCurSortForce';
+FinalSTDNormCurSortForce =FinalSTDNormCurSortForce/sqrt(length(FinalSTDNormCurSortForce));%change to SEM;
 FinalMeanOnCurrentSortForce = FinalMeanOnCurrentSortForce';
 FinalSTDOnCurrentSortForce=FinalSTDOnCurrentSortForce';
+FinalSTDOnCurrentSortForce=FinalSTDOnCurrentSortForce/sqrt(length(FinalSTDOnCurrentSortForce));%change to SEM;
 FinalMeanForceSortForce=FinalMeanForceSortForce';
 FinalSTDForceSortForce=FinalSTDForceSortForce';
+FinalSTDForceSortForce=FinalSTDForceSortForce/sqrt(length(FinalSTDForceSortForce));%change to SEM;
+
+
 
 
 %Find number of Averages per Indentation or Force 

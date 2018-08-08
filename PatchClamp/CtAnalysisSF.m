@@ -22,7 +22,7 @@ close all; clc
 % if index exceeds, probably interrupted beforehand. Simple: hardcode
 % respected protLocNeg. Better: adapt code
 
-    name = 'STF081'; % name of recording. placed into varaibel fiels names
+    name = 'STF155'; % name of recording. placed into varaibel fiels names
     
     % Look for pgf names ending in "WC_ct_neg and WC_ct_pos" and note their locations.
     protNameNeg = 'WC_ct_neg';
@@ -46,7 +46,7 @@ close all; clc
         
        % hardcoding, if program fails
        %here: protLocNeg = [x1,x2,x3]
-       protLocNeg = [6, 14, 19, 24, 29, 34, 39, 44, 49, 57, 65, 70, 75]
+       %protLocNeg = [6, 14, 19, 24, 29, 34, 39, 44, 49, 57, 65, 70, 75]
        for i= 1:length(protLocNeg);
            
         ctNeg = -1.*ephysData.(name).data{1,protLocNeg(i)};
