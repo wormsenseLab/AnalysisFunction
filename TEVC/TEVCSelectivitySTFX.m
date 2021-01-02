@@ -32,14 +32,14 @@ end
 close all; clc
 
 %%% hardcoding part: %%%%%%%
-%makelots = 1; % if 1 than make plots, if 0 then skip
-a1 =2; %first file to be analyzed: (start with 2, because 1 is col header)
-a2 = a1%LastFile; %for last File script must run o8ce LastFile ; %(last file to be analyzed; either number or variable LastFile;)
-LeakFile = 'NaGlu(300EIPA)';
-%forIBU LeakFile = 'NaGluBefore';
+%makelots = 0; % if 1 than make plots, if 0 then skip function not
+%imoplemented?
+a1 =3; %first file to be analyzed: (start with 2, because 1 is col header)
+a2 = a1%%LastFile; %for last File script must run o8ce LastFile ; %(last file to be analyzed; either number or variable LastFile;)
+LeakFile = 'NaGluBefore';
 stimuli = 'STEPSens';
 %%%%% !!!!!!!!!
-DimRefill = 4; %change if File8 was not a Step : maybe, find first step protocol...
+DimRefill =4; %change if File8 was not a Step : maybe, find first step protocol...
 %this needs to be changed, because stupidly hardcoded
 %DimOfA = cell2mat(A(8)); %TODO: needs to be a file with Step protocol.
 % needs to replace other protocols than StepSens with NaN values; shorting
@@ -61,6 +61,7 @@ AllCol(cellfun(findIsNanVal, AllCol)) = [];
 LastFile = length(AllCol); %Determines the lenth of the column, so the last file to analyze
 %DetermineLengthCol = length(AllCol);
 
+
 %get AnimalID from col 2; hardcoded,because I need the value to save file
 %first and "name" of row appears only in the for loop.
 indAnimalID = find(strcmpi(headers, 'Animal ID')); 
@@ -79,8 +80,11 @@ Voltage = {};
 MeanSTEPs = {};
 CurMinus85 = {};
 LEAKMinus85 = {};
+Vrev = {};
+IndexSolutions = {};
+SortIndexSolutions = {};
 
-T = table(CellIDRec,Injection,CultivationSol,DaysPostInj,Rating,Voltage,CurMinus85,MeanSTEPs,LEAKMinus85,TestSol);%
+T = table(CellIDRec,Injection,CultivationSol,DaysPostInj,Rating,Voltage,MeanSTEPs,LEAKMinus85,TestSol,Vrev,CurMinus85,IndexSolutions,SortIndexSolutions);%
 %TODO: including all in one table from one "frog" does not work yet
 % filename = sprintf('DoseDependence-%s.txt',AnimalID); %define table
 % writetable(T,filename,'Delimiter','\t','WriteRowNames',true)
@@ -125,6 +129,8 @@ DPI = raw(RowCellId,indDPI);
 % AnimalID = cell2mat(AnimalID); %convert to char to use it as string variable to save data according to Injection
 % 
 
+
+
 % ToDo:
 Files = 1:length(ephysData.(name).protocols);
 A=[]; V= [];  % to get an empty array, if I analyzed different files before
@@ -133,12 +139,12 @@ A{i} = ephysData.(name).data{1, i}; %Current
 V{i} = ephysData.(name).data{2, i}; %Voltage
 end
 
+
 DimOfA = cell2mat(A(DimRefill));% hardcoded to get current dimension of step protocol
 DimOfA2 = size(DimOfA);
 % MAYBE DON'T INCLUDE, because then series order would change
 %   find all files with certain protocol name: 
 % ifelse statement: if not respective stimuli name (FiveStep or FiveRampHold), then empty array; 
-
 
 
 for i = Files(:,1):Files(:,end);
@@ -156,22 +162,6 @@ for i = Files(:,1):Files(:,end);
      %  end
    end
 end
-
-
-% for i = Files(:,1):Files(:,end);
-%    if find(strcmpi(ephysData.(name).protocols{1,i}, stimuli)) == 1;
-%        if size(A{1, i},2)<max(DimOfA2(2))
-%            A{1, i} = NaN(DimOfA2(1),DimOfA2(2)); ; V{1, i} = NaN(DimOfA2(1),DimOfA2(2));  % of protocl was interupted and fewer steps than the dimension, replace with NaN
-%        else
-%            continue
-%            if find(strcmpi(ephysData.(name).protocols{1,i}, stimuli)) == 0; % if other stimuli than step fil up with NaNs that sries in metadata sheet match
-%     A{1, i} = NaN(DimOfA2(1),DimOfA2(2)); ; V{1, i} = NaN(DimOfA2(1),DimOfA2(2));  
-%            else
-%                continue
-%            end 
-%        end
-%    end
-% end
 
 
 %Error using cat
@@ -196,7 +186,7 @@ Vall3D = cat(3, VShort{:});
 figure()
 plot(AMeanMinus85Series, 'o')
  legend(InjectionMix)
- 
+
 %TODO: pay attention with AShort, because Series then are maybe not  
 AMean = mean(Aall3D(400:700,:,:)); %ToDo: Not hardcoded
 VMean = mean(Vall3D(400:700,:,:)); 
@@ -207,11 +197,25 @@ AllSolutions = raw(2:end,CellIDSol);
 fh = @(x) all(isnan(x(:)));
 AllSolutions(cellfun(fh, AllSolutions)) = [];
 
+SolutionsUsed = {}; indSolutions =[];%EndValSolutions =[];
+for i = 1:length(AllSolutions)
+    indSolutions(i,1) = find(strcmpi(headers, AllSolutions(i))); 
+     if strcmp({'NaN'},raw(RowCellId,indSolutions(i))) == 1
+           display 'not all solutions were used'
+     SolutionsUsed{i} =  {'NaN'}     
+     else      
+     SolutionsUsed{i} =  AllSolutions{i}; 
+     end
+    %EndValSolutions{i} = cell2mat(Solutions{i}); problem, because length
+    %does not fit % how to make a new variable in a loop
+end
+
+
 %ToDO: ERROR with NaN values. Include Sorting
 Solutions = {}; indSolutions =[];%EndValSolutions =[];
 for i = 1:length(AllSolutions)
-    indSolutions(i,1) = find(strcmpi(headers, AllSolutions(i))); 
-    Solutions{i,1} =  raw(RowCellId,indSolutions(i)); 
+    indSolutions(i,1) = find(strcmpi(headers, AllSolutions(i)));     
+     Solutions{i,1} =  raw(RowCellId,indSolutions(i));      
     %EndValSolutions{i} = cell2mat(Solutions{i}); problem, because length
     %does not fit % how to make a new variable in a loop
 end
@@ -219,7 +223,6 @@ end
 
 %fh = @(x) all(isnan(x(:)));
 %Solutions(cellfun(fh, Solutions)) = [];
-
 
 %TODO: % remove solutions which were not used during this recording
 %TODO: sorting of data?
@@ -246,47 +249,37 @@ MEANMinus85Conditions(i) = mean(AMeanMinus85Series(CurSol(1):CurSol(end)));
 end
 end
 
-LEAKhardcodedSol = [];
-LEAKhardcodedSol = cell2mat(Solutions{11});
-LEAKhardcodedSol = str2num(LEAKhardcodedSol);
-
-LEAKhardcoded = [];
-LEAKhardcoded = mean(AMean(:,:,LEAKhardcodedSol(1):LEAKhardcodedSol(end)),3)
-
-%T0DO, whathappens if one solution was not used; use same as in TEVC
+%T0DO, what happens if one solution was not used; use same as in TEVC
 %Solutions
 VoltageMean = mean(MEANVoltageConditions);
 
+
+
 %find index for Leak current were Solution is blocked with 300 uM Amiloride
 % Leak = mean @ 300 uM Amiloride
-Leak = []; XY = [];
+Leak = []; XY = [];LeakMinus85 = [];
 for i = 1:length(AllSolutions);
     XY = cell2mat(AllSolutions(i));
 %isLeak = strcmp('NaGlu(300Amil)',XY); 
-%BUG
-isLeak = strcmp('NaGlu(300EIPA)',LeakFile);; 
-%isLeak = strcmp(LeakFile,0); 
+isLeak = strcmp(LeakFile,XY); 
 if isLeak == 1
     Leak = MEANConditions(i,:);
-    %add here LEAK calculation
-   %MEAN LEAK(i) = mean(AMeanMinus85Series(CurSol(1):CurSol(end)));
     LeakMinus85 =  MEANMinus85Conditions(i);
 else 
     display 'Today is a great day'
+    LeakMinus85 = 0;
 end
 end
- 
+
 
 %Subtract Leak (@LeakFile Condition)
+%Don't subtract leak
 SubMEANConditions = []; SubMEANMinus85Cond = [];
 for i = 1:length(AllSolutions);
-SubMEANConditions(i,:) = MEANConditions(i,:) - LEAKhardcoded % Leak;
-SubMEANMinus85Cond(i) = MEANMinus85Conditions(i) - LeakMinus85;
+SubMEANConditions(i,:) = MEANConditions(i,:); %MEANConditions(i,:) - Leak;
+SubMEANMinus85Cond(i) = MEANMinus85Conditions(i); %- LeakMinus85;
 end
-
-figure()
-plot(SubMEANConditions, 'r')
-
+%SubMEANMinus85Cond = SubMEANMinus85Cond'
 
 TestSolution = {}; InjectionMixExp = {}; RatingExp ={}; CultivationExp = {}; DPIExp ={}; CellIDExp = {};
 LEAKMinus85 = [];
@@ -315,7 +308,7 @@ LEAKMinus85 = num2cell(LEAKMinus85);
   
 DrugSensitiveCurrent = {};
 DrugSensitiveCurrent = SubMEANConditions;
-DrugSensitiveCurrent = DrugSensitiveCurrent(1,:)';
+DrugSensitiveCurrent = DrugSensitiveCurrent(1,:)'; %hardcoded data of first solution 
 
 %ToDO: same length as other columns in table to export. first fill with NaN
 %values. or fill up with nan value afterwards...
@@ -331,26 +324,112 @@ SubMEANConditionsAbs =  cellfun(@(x) abs(x),SubMEANConditions,'un',0);
 SubMEANMinus85Cond = cellfun(@(x) x*-1,SubMEANMinus85Cond,'un',0);
 
 
-%figure()
-%plot(SubMEANConditions, 'r')
+%sort Data to Export based on Solutions 
+FirstIndSolutions = [];
+for i = 1:length(Solutions);
+CellSol = cell2mat(Solutions{i});
+CellSolNum = str2num(CellSol); 
+FirstIndSolutions(i) = CellSolNum(1);
+end
+FirstIndSolutions = FirstIndSolutions';
+
+%table variables sorted according to index in Perfusionssolution applied
+SortTestSolution = {}; SortInjection = {}; SortRating = {}; SortCultivationExp = {}; SortDPIExp={}; SortCellIDExp = {};SortMEANVoltageConditions = {};
+SortSubMEANConditions ={}; SortSubMEANMinus85Cond = {}; SortLEAKMinus85 = {};
+
+[SortSol sorted_index] = sort(FirstIndSolutions); % get index of mean indentations
+SortTestSolution = TestSolution(sorted_index);
+SortInjection =  InjectionMixExp(sorted_index);
+SortRating = RatingExp(sorted_index);
+SortCultivationExp = CultivationExp(sorted_index);
+SortDPIExp = DPIExp(sorted_index);
+SortCellIDExp = CellIDExp(sorted_index);
+SortMEANVoltageConditions = MEANVoltageConditions(sorted_index,:);
+SortSubMEANConditions = SubMEANConditions(sorted_index,:);
+SortSubMEANMinus85Cond = SubMEANMinus85Cond(sorted_index);
+SortLEAKMinus85 = LEAKMinus85(sorted_index);
+SortIndexSolutions = Solutions(sorted_index);
 
 %table variables
 % ToDO, try to include %s here
-TestSol = TestSolution; 
-Injection = InjectionMixExp;
-Rating = RatingExp;
-CultivationSol = CultivationExp;
-DaysPostInj = DPIExp;
-CellIDRec = CellIDExp;
-Voltage = MEANVoltageConditions;
-MeanSTEPs = SubMEANConditionsAbs; 
-CurMinus85 = SubMEANMinus85Cond;
-LEAKMinus85 = LEAKMinus85;
+%TestSol = TestSolution; 
+TestSol = SortTestSolution; %sorted test solution according to index in Solution
+Injection = SortInjection;
+Rating = SortRating;
+CultivationSol = SortCultivationExp;
+DaysPostInj = SortDPIExp;
+CellIDRec = SortCellIDExp;
+Voltage = SortMEANVoltageConditions;
+MeanSTEPs = SortSubMEANConditions;  
+CurMinus85 = SortSubMEANMinus85Cond;
+LEAKMinus85 = SortLEAKMinus85;
+%IndexSolutions = FirstIndSolutions;
+
+%SortSubMEANConditions
+
+% absMEANConditions = [];
+% absMEANConditions = abs(MEANConditions)';
+% MinabsMEANConditions = [];
+% MinabsMEANConditions = min(absMEANConditions);
+% absMEANConditions = absMEANConditions';
+% CellMin = [];
+
+%CurSol = cell2mat(SortSubMEANConditions);
+%CurSol = str2num(CurSol)
+
+absMEANConditions = [];
+absMEANConditions = abs(cell2mat(SortSubMEANConditions))';
+MinabsMEANConditions = [];
+MinabsMEANConditions = min(absMEANConditions);
+absMEANConditions = absMEANConditions';
+CellMin = [];
+
+MeanNew = []
+MeanNew = cell2mat(SortSubMEANConditions);
+
+for i = 1:size(Voltage,1)
+     if isnan(MinabsMEANConditions(i)) == 1
+            display 'not all solutions were used' 
+            CellMin(i) = 0
+     else      
+         display 'try again'
+  CellMin(i) =  find([absMEANConditions(i,:)] == MinabsMEANConditions(i),1);
+     end 
+end
+
+CellMin = CellMin';
+
+Vrev = [];
+for i = 1:size(Voltage,1)
+if CellMin(i) == 0
+    display 'not in recordings'
+    Vrev(i) = NaN;
+else    
+%p = polyfit(cell2mat(Voltage(i,CellMin(i)-1:CellMin(i)+1)),MEANConditions(i,CellMin(i)-1:CellMin(i)+1),1);
+p = polyfit(cell2mat(Voltage(i,CellMin(i)-1:CellMin(i)+1)),MeanNew(i,CellMin(i)-1:CellMin(i)+1),1);
+
+%Vrev = Current 0
+%0 = x*m+b
+%Vrev = -b/m
+ %b = p(2)
+% m = p(1)
+Vrev(i) = -p(2)/p(1);
+end
+end
+Vrev = Vrev';
+Vrev
+display 'if Vev all NaN, change DimRefill as this file is then not a step'
+
+ 
+figure()
+   scatter(cell2mat(Voltage(1,:)),MeanNew(1,:))
+   hold on
+   scatter(cell2mat(Voltage(3,:)),MeanNew(4,:))
 
 
-% % 
-T = table(CellIDRec,Injection,CultivationSol,DaysPostInj,Rating,Voltage,CurMinus85,MeanSTEPs,LEAKMinus85,TestSol);%
-filename = sprintf('DoseDependenceTEVC-%s.txt',name); %define table
+   
+   T = table(CellIDRec,Injection,CultivationSol,DaysPostInj,Rating,Voltage,MeanSTEPs,LEAKMinus85,TestSol,Vrev,CurMinus85,SortIndexSolutions);%,IndexSolutions
+filename = sprintf('Selectivity-TEVC-%s.txt',name); %define table
 writetable(T,filename,'Delimiter','\t','WriteRowNames',true)
 
 

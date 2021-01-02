@@ -7,7 +7,7 @@
     % col Rating 1-4, with 4 being best; 0 means not assigned, Don't use NaN. Output Table is not working then
     % Make sure, path with all functions is enabled
     % one col Before; one col after (?)
-%ToDO
+%ToD9O
 % analze dose-response curves
 % include comments in table
 
@@ -33,10 +33,10 @@ close all; clc
 
 %%% hardcoding part: %%%%%%%
 %makelots = 1; % if 1 than make plots, if 0 then skip
-a1 =2; %first file to be analyzed: (start with 2, because 1 is col header)
-a2 = a1%LastFile; %for last File script must run o8ce LastFile ; %(last file to be analyzed; either number or variable LastFile;)
-LeakFile = 'NaGlu(300EIPA)';
-%forIBU LeakFile = 'NaGluBefore';
+a1 = 3; %first file to be analyzed: (start with 2, because 1 is col header)
+a2 = LastFile; %for last File script must run o8ce LastFile ; %(last file to be analyzed; either number or variable LastFile;)
+%LeakFile = 'NaGlu(300EIPA)';
+LeakFile = 'NaGluBefore';
 stimuli = 'STEPSens';
 %%%%% !!!!!!!!!
 DimRefill = 4; %change if File8 was not a Step : maybe, find first step protocol...
@@ -196,10 +196,12 @@ Vall3D = cat(3, VShort{:});
 figure()
 plot(AMeanMinus85Series, 'o')
  legend(InjectionMix)
+ title('if there is no data curve change number in DimRefill')
  
 %TODO: pay attention with AShort, because Series then are maybe not  
 AMean = mean(Aall3D(400:700,:,:)); %ToDo: Not hardcoded
 VMean = mean(Vall3D(400:700,:,:)); 
+
 
 AllSolutions = []; ;indSolutions = [];
 CellIDSol = find(strcmpi(headers, 'AllSolutions'));
@@ -246,14 +248,9 @@ MEANMinus85Conditions(i) = mean(AMeanMinus85Series(CurSol(1):CurSol(end)));
 end
 end
 
-LEAKhardcodedSol = [];
-LEAKhardcodedSol = cell2mat(Solutions{11});
-LEAKhardcodedSol = str2num(LEAKhardcodedSol);
 
-LEAKhardcoded = [];
-LEAKhardcoded = mean(AMean(:,:,LEAKhardcodedSol(1):LEAKhardcodedSol(end)),3)
 
-%T0DO, whathappens if one solution was not used; use same as in TEVC
+%T0DO, what happens if one solution was not used; use same as in TEVC
 %Solutions
 VoltageMean = mean(MEANVoltageConditions);
 
@@ -263,13 +260,9 @@ Leak = []; XY = [];
 for i = 1:length(AllSolutions);
     XY = cell2mat(AllSolutions(i));
 %isLeak = strcmp('NaGlu(300Amil)',XY); 
-%BUG
-isLeak = strcmp('NaGlu(300EIPA)',LeakFile);; 
-%isLeak = strcmp(LeakFile,0); 
+isLeak = strcmp(LeakFile,XY); 
 if isLeak == 1
     Leak = MEANConditions(i,:);
-    %add here LEAK calculation
-   %MEAN LEAK(i) = mean(AMeanMinus85Series(CurSol(1):CurSol(end)));
     LeakMinus85 =  MEANMinus85Conditions(i);
 else 
     display 'Today is a great day'
@@ -277,15 +270,19 @@ end
 end
  
 
-%Subtract Leak (@LeakFile Condition)
+% %Subtract Leak (@LeakFile Condition)
+% SubMEANConditions = []; SubMEANMinus85Cond = [];
+% for i = 1:length(AllSolutions);
+% SubMEANConditions(i,:) = MEANConditions(i,:) - Leak;
+% SubMEANMinus85Cond(i) = MEANMinus85Conditions(i) - LeakMinus85;
+% end
+
+%Don't Subtract Leak (@LeakFile Condition)
 SubMEANConditions = []; SubMEANMinus85Cond = [];
 for i = 1:length(AllSolutions);
-SubMEANConditions(i,:) = MEANConditions(i,:) - LEAKhardcoded % Leak;
-SubMEANMinus85Cond(i) = MEANMinus85Conditions(i) - LeakMinus85;
+SubMEANConditions(i,:) = MEANConditions(i,:);
+SubMEANMinus85Cond(i) = MEANMinus85Conditions(i);
 end
-
-figure()
-plot(SubMEANConditions, 'r')
 
 
 TestSolution = {}; InjectionMixExp = {}; RatingExp ={}; CultivationExp = {}; DPIExp ={}; CellIDExp = {};
@@ -330,9 +327,8 @@ SubMEANConditionsAbs ={};
 SubMEANConditionsAbs =  cellfun(@(x) abs(x),SubMEANConditions,'un',0);
 SubMEANMinus85Cond = cellfun(@(x) x*-1,SubMEANMinus85Cond,'un',0);
 
-
 %figure()
-%plot(SubMEANConditions, 'r')
+%plot(SubMEANConditionsAbs)
 
 %table variables
 % ToDO, try to include %s here
@@ -346,7 +342,6 @@ Voltage = MEANVoltageConditions;
 MeanSTEPs = SubMEANConditionsAbs; 
 CurMinus85 = SubMEANMinus85Cond;
 LEAKMinus85 = LEAKMinus85;
-
 
 % % 
 T = table(CellIDRec,Injection,CultivationSol,DaysPostInj,Rating,Voltage,CurMinus85,MeanSTEPs,LEAKMinus85,TestSol);%

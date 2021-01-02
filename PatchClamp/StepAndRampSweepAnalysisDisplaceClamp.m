@@ -54,10 +54,10 @@ end
 close all; clc
 
 %%% hardcoding part:
-name = 'STF156'; % name of recording. placed into varaibel fiels names%
+name = 'STF153'; % name of recording. placed into varaibel fiels names%
 stimuli = 'FiveStep'; 
 OnlyMechano = 0; % if = 0, then FALCON, if 1, then ForceClamp Only 
-ReadFromSheet = 0; % if = 0, then command promp to delete block, if 1, then read from MetaDataSheet 
+ReadFromSheet = 1; % if = 0, then command promp to delete block, if 1, then read from MetaDataSheet "deletedSeriesFiveBlock"
 % protocol names:
 % Single protocols: Step and Ramp-Hold; 
 % Five sweeps per protocol:FiveStep, FiveRampHold; does not work with alternative names
@@ -541,7 +541,7 @@ MeanTracesIndentation =[];
 % actual Force value!!!
 
 SortForce =[]; MeanSameIndForce=[]; SortForceTraces=[];transForce =[];MeanTracesForce =[];
-  
+  transActuSensor = [];SortActuSensor = [];
 
 if isFiveStep == 1 || isStep == 1 || isFifteenStep == 1|| isSixteenStep == 1 || isFivePosStep == 1;
     disp 'Step Round and sort'
@@ -556,6 +556,8 @@ transAsub = ASubtractNew';
 SortASubtract = transAsub(sorted_index,:);
 transIndentation = Indentation'; 
 SortIndentation = transIndentation(sorted_index,:);
+transActuSensor = ActuSensorAvg'; 
+SortActuSensor = transActuSensor(sorted_index,:);
 transForce = Force'; 
 SortForceTraces = transForce(sorted_index,:);
 transCellMaxActuFirst = [];
@@ -563,6 +565,8 @@ transCellMaxActuFirst = CellMaxActuFirst';
 MeanCellMaxActuFirst = [];
 SortCellMaxActuFirst = [];
 SortCellMaxActuFirst = transCellMaxActuFirst(sorted_index,:);
+
+
 
 %signals sorted by Force
 % application only on mean Averaged currents so far
@@ -575,6 +579,7 @@ tansIndSortForce = MeanIndentation';
  SortIndentationSortForce = tansIndSortForce(sorted_indexForce,:);%ToDo: update in delete series
 transMeanForceForce = MeanForce';
 SortForceTracesSortForce= transMeanForceForce(sorted_indexForce,:);
+
 
 MergeForce= [];
 MergeForce = builtin('_mergesimpts',SortedForceForForce,0.2,'average'); 
@@ -654,6 +659,9 @@ FindSameInd(:,k) = find([SortInd] >MergeInd(k)-tolerance & [SortInd]<MergeInd(k)
 end   
 %FindLogicalNumberOfTraces = FindLogicalNumberOfTraces'
 %NumberTracesPerInd = NumberTracesPerInd';
+
+
+MeanTracesActuSensor = [];
 for k = 1:length(MergeInd);
 %FindSameIndInitial{k} = find([SortInd] >MergeInd(k)-tolerance & [SortInd]<MergeInd(k)+tolerance);
 MeanSameIndCurrent(k) = nanmean(SortCurrent(FindSameInd(:,k))); %average MaxCurrent*-1 with same indentation
@@ -661,10 +669,16 @@ MeanSameIndCurrentOff(k) = nanmean(SortCurrentOff(FindSameInd(:,k))); %TODO: som
 MeanSameIndForce(k) = nanmean(SortForce(FindSameInd(:,k))); %average Force with same Indentation
 MeanTraces(k,:) = nanmean(SortASubtract((FindSameInd(1,k)):(FindSameInd(end,k)),:),1); % mean traces in a row vector; problem with mean traces; problem, when inddentation oonly ones
 MeanTracesIndentation(k,:) = nanmean(SortIndentation((FindSameInd(1,k)):(FindSameInd(end,k)),:),1);
+MeanTracesActuSensor(k,:) = nanmean(SortActuSensor((FindSameInd(1,k)):(FindSameInd(end,k)),:),1);
 MeanTracesForce(k,:) = nanmean(SortForceTraces((FindSameInd(1,k)):(FindSameInd(end,k)),:),1);
 MeanCellMaxActuFirst(k) = nanmean(SortCellMaxActuFirst(FindSameInd(:,k)));
 end
 
+
+MeanTracesActuSensor = MeanTracesActuSensor';
+
+%figure()
+%plot(MeanTracesActuSensor)
 
 else
     disp 'Ramp Round and Sort';
@@ -747,8 +761,6 @@ MeanTracesIndentation = MeanTracesIndentation';
 MeanSameIndCurrentOff = MeanSameIndCurrentOff';
 
 
-
-
 if isFiveStep == 1 || isStep == 1 || isFifteenStep == 1 || isFivePosStep == 1;
     disp 'step has no velocity calulation yet - maybe make it'
 else
@@ -770,36 +782,85 @@ end
 %calculate max current of average traces
 
 absMeanTraces = [];AvgMaxCurrentAVGMinus=[]; AvgMaxCurrentAVG=[];CellMinAVG=[];MinAVG=[];
- MinAOffAVG=[];AVGCellMinOff=[];CellMinOffAVGShort=[];
+MinAOffAVG=[];AVGCellMinOff=[];CellMinOffAVGShort=[];
 MaxActuSensorOnAVG =[];CellMaxActuFirstAVG = []; StartOffBelowShortAVG =[];StartOffBelowAVG=[];
 AvgMaxCurrentOffAVG = [];
 
+
 absMeanTraces = abs(MeanTraces); %ToDo, can I force a certain orientation?
 
-figure()
-% plot(absMeanTraces(:,10))
-% hold on
-plot(MeanTraces(:,10))
 
-%CellHalfT1ON = [];HalfMin = [];
-for i = 1:size(absMeanTraces,2);
-MinAVG(i) = max(absMeanTraces(Start(i):Ende(i),i));
-CellMinAVG(i) = find([absMeanTraces(Start(i):Ende(i),i)] == MinAVG(i),1,'first');
-CellMinAVG(i) = Start(i)+ CellMinAVG(i); 
-%HalfMin(i) = max(absMeanTraces(Start(i):Ende(i),i))/2;
-%CellHalfT1ON(i) = find([absMeanTraces(:,i)] == HalfMin(i),1,'first');
-AvgMaxCurrentAVG(i) = mean(MeanTraces(CellMinAVG(i)-3:CellMinAVG(i)+3,i)); % Average from averaged traces and not average of the single peaks
-StartOffBelowShortAVG(i) = find([ActuSensorAvg(MeanCellMaxActuFirst(i):end,i)] < BelowPlateau(i),1, 'first'); % %% find cell, where 1st value is lower than threshold; Onset Off-Stimulus
-StartOffBelowAVG(i) = StartOffBelowShortAVG(i)+ MeanCellMaxActuFirst(i);
-MinAOffAVG(i) = max(absMeanTraces(StartOffBelowAVG(i)-0.05*fs:StartOffBelowAVG(i)+0.01*fs,i)); %change not hardcode 
-CellMinOffAVGShort(i) = find([absMeanTraces(StartOffBelowAVG(i)-0.05*fs:end,i)] == MinAOffAVG(i),1,'first');
-CellMinOffAVGShort(i) = find([absMeanTraces(MeanCellMaxActuFirst(i):StartOffBelowAVG(i)+0.01*fs,i)] == MinAOffAVG(i),1,'first');  
-CellMinOffAVG(i) = CellMinOffAVGShort(i)+MeanCellMaxActuFirst(i);
-AvgMaxCurrentOffAVG(i) = mean(MeanTraces(CellMinOffAVG(i)-5:CellMinOffAVG(i)+5,i)); % ToDo Five or 10???
+ % figure()
+%  plot(absMeanTraces(:,8))
+%   hold on
+%    plot(absMeanTraces(:,9))
+% plot(MeanTraces(:,10))
+
+DecayMax = []; 
+ChargeQ = [];
+DecayMaxSHORT = [];
+CellHalfT1ON = [];HalfMin = [];CellHalfT1ONShort = [];
+AvgHalfT1ONCurrentAVG = [];
+ HalfT1ON = [];CellHalfT2ONShort = [];HalfT2ON = []; AvgHalfT2ONCurrentAVG = [];
+ CellHalfT2ON = [];
+ CellHalfT1OFFShort= [];
+ StartAvg = [];  EndeAvg = [];
+
+%calculate threshold for averaged traces (needed to determine the Onset (Start) of the Stimulus)
+StartBaseAvg = [];StdZeroActuAvg =[]; MaxZeroActuAvg= [];ActuSensorPlateauAvgMean =[];
+absMeanTracesActuSensor = [];MaxActuSensorPlateauAvgMean =[];StdActuSensorPlateauAvgMean =[];
+absMeanTracesActuSensor = abs(MeanTracesActuSensor); 
+for i = 1:size(MeanTracesActuSensor,2);
+   MaxZeroActuAvg(i)= max(absMeanTracesActuSensor(1:100,i)); 
+   StdZeroActuAvg(i)= nanstd(absMeanTracesActuSensor(1:100,i));
+   ActuSensorPlateauAvgMean(:,i) = tsmovavg(MeanTracesActuSensor(CellMaxActuFirst(i):CellMaxActuFirst(i)+500,i),'s',5,1);
+     MaxActuSensorPlateauAvgMean(i)= max(ActuSensorPlateauAvgMean(5:500,i));
+ StdActuSensorPlateauAvgMean(i)= nanstd(ActuSensorPlateauAvgMean(5:500,i));
 end
 
 
+BelowPlateauAvg = [];
+BelowPlateauAvg = MaxActuSensorPlateauAvgMean - 30*StdActuSensorPlateauAvgMean;
 
+StartBaseAvg = MaxZeroActuAvg + 4*StdZeroActuAvg ;
+
+figure()
+plot(MeanTracesActuSensor)
+
+for i = 1:size(absMeanTraces,2);
+ StartAvg(i) = find([MeanTracesActuSensor(:,i)] > StartBaseAvg(i),1, 'first');
+  EndeAvg(i) = StartAvg(i) + (fs/7);
+  MinAVG(i) = max(absMeanTraces(StartAvg(i):EndeAvg(i),i)); %find the maximal value in the On-Response
+  CellMinAVG(i) =  find([absMeanTraces(StartAvg(i):EndeAvg(i),i)] >= MinAVG(i),1,'first'); %find the first cell where the maximum value appears within "Start" and "Ende"
+  CellMinAVG(i) =  StartAvg(i)+ CellMinAVG(i); %add the cell number to the Start value to get the cell for the maximum peak
+  HalfMin(i) = max(absMeanTraces(StartAvg(i):EndeAvg(i),i))/2;
+  CellHalfT1ONShort(i) = find([absMeanTraces(StartAvg(i):EndeAvg(i),i)] >= HalfMin(i),1,'first');%
+  CellHalfT1ON(i) = StartAvg(i)+CellHalfT1ONShort(i);
+  AvgHalfT1ONCurrentAVG(i) = mean(MeanTraces(CellHalfT1ON(i)-3:CellHalfT1ON(i)+3,i));
+  HalfT1ON(i) = CellHalfT1ONShort(i)*interval;
+ CellHalfT2ONShort(i) = find([absMeanTraces(CellMinAVG(i):EndeAvg(i),i)] <= HalfMin(i),1,'first');%
+ HalfT2ON(i) = CellHalfT2ONShort(i)*interval;
+ CellHalfT2ON(i) = CellMinAVG(i)+CellHalfT2ONShort(i);
+ AvgHalfT2ONCurrentAVG(i) = mean(MeanTraces(CellHalfT2ON(i)-3:CellHalfT2ON(i)+3,i));
+ AvgMaxCurrentAVG(i) = mean(MeanTraces(CellMinAVG(i)-3:CellMinAVG(i)+3,i)); % Average from averaged traces and not average of the single peaks
+ DecayMax(i) =  StartAvg(i)+ 0.200/interval;
+ DecayMaxSHORT(:,i) = absMeanTraces(StartAvg (i):DecayMax(i),i);
+ ChargeQ(i) = trapz(absMeanTraces(StartAvg(i):DecayMax(i),i)/fs);
+ StartOffBelowShortAVG(i) = find([MeanTracesActuSensor(MeanCellMaxActuFirst(i):end,i)] < BelowPlateauAvg(i),1, 'first'); % %% find cell, where 1st value is lower than threshold; Onset Off-Stimulus
+ StartOffBelowAVG(i) = StartOffBelowShortAVG(i)+ MeanCellMaxActuFirst(i);
+ MinAOffAVG(i) = max(absMeanTraces(StartOffBelowAVG(i)-0.05*fs:StartOffBelowAVG(i)+0.01*fs,i)); %change not hardcode 
+ CellMinOffAVGShort(i) = find([absMeanTraces(StartOffBelowAVG(i)-0.05*fs:end,i)] == MinAOffAVG(i),1,'first');
+ CellMinOffAVGShort(i) = find([absMeanTraces(MeanCellMaxActuFirst(i):StartOffBelowAVG(i)+0.01*fs,i)] == MinAOffAVG(i),1,'first');  
+ CellMinOffAVG(i) = CellMinOffAVGShort(i)+MeanCellMaxActuFirst(i);
+ AvgMaxCurrentOffAVG(i) = mean(MeanTraces(CellMinOffAVG(i)-5:CellMinOffAVG(i)+5,i)); % ToDo Five or 10???
+end
+
+
+ChargeQ = ChargeQ';
+AvgHalfT1ONCurrentAVG = AvgHalfT1ONCurrentAVG'*-1;
+HalfT1ON = HalfT1ON';
+HalfT2ON = HalfT2ON';
+AvgHalfT2ONCurrentAVG = AvgHalfT2ONCurrentAVG'*-1;
 
 %calculate Mean On & Off Currents for Force dependence
 absMeanTracesSortForce = [];
@@ -807,18 +868,22 @@ absMeanTracesSortForce = abs(MeanTracesSortForce);
 MinAVGSortForce=[];CellMinAVGSortForce=[];AvgMaxCurrentAVGSortForce=[];
 MinAOffAVGSortForce=[];CellMinOffAVGShortSortForce=[];AvgMaxCurrentOffAVGSortForce=[];CellMinOffAVGSortForce=[];StartOffBelowShortAVGSortForce=[];
 
+%to do. sort actu sensor by same force and then calculate start and end
+%values and plateau values for ti
+
 for i = 1:size(absMeanTracesSortForce,2); 
 MinAVGSortForce(i) = max(absMeanTracesSortForce(Start(i):Ende(i),i));
 CellMinAVGSortForce(i) = find([absMeanTracesSortForce(:,i)] == MinAVGSortForce(i),1,'first');
 AvgMaxCurrentAVGSortForce(i) = mean(MeanTracesSortForce(CellMinAVGSortForce(i)-5:CellMinAVGSortForce(i)+5,i)); % Average from averaged traces and not average of the single peaks
-%StartOffBelowShortAVGSortForce(i) = find([ActuSensorAvg(CellMinAVGSortForce(i):end,i)] < BelowPlateau(i),1, 'first') % %% find cell, where 1st value is lower than threshold; Onset Off-Stimulus
-%StartOffBelowAVG(i) = StartOffBelowShortAVG(i)+ MeanCellMaxActuFirst(i);
-MinAOffAVGSortForce(i) = max(absMeanTracesSortForce(StartOffBelowAVG(i)-0.05*fs:StartOffBelowAVG(i)+0.01*fs,i)); %change not hardcode 
-CellMinOffAVGShortSortForce(i) = find([absMeanTracesSortForce(StartOffBelowAVG(i)-0.05*fs:end,i)] == MinAOffAVGSortForce(i),1,'first');
-CellMinOffAVGShortSortForce(i) = find([absMeanTracesSortForce(MeanCellMaxActuFirst(i):StartOffBelowAVG(i)+0.01*fs,i)] == MinAOffAVGSortForce(i),1,'first');  
-CellMinOffAVGSortForce(i) = CellMinOffAVGShortSortForce(i)+MeanCellMaxActuFirst(i);
-AvgMaxCurrentOffAVGSortForce(i) = mean(MeanTracesSortForce(CellMinOffAVGSortForce(i)-5:CellMinOffAVGSortForce(i)+5,i));
+%%%%StartOffBelowShortAVGSortForce(i) = find([ActuSensorAvg(CellMinAVGSortForce(i):end,i)] < BelowPlateau(i),1, 'first') % %% find cell, where 1st value is lower than threshold; Onset Off-Stimulus
+%%%%%StartOffBelowAVG(i) = StartOffBelowShortAVG(i)+ MeanCellMaxActuFirst(i);
+%MinAOffAVGSortForce(i) = max(absMeanTracesSortForce(StartOffBelowAVG(i)-0.05*fs:StartOffBelowAVG(i)+0.01*fs,i)); %change not hardcode 
+%CellMinOffAVGShortSortForce(i) = find([absMeanTracesSortForce(StartOffBelowAVG(i)-0.05*fs:end,i)] == MinAOffAVGSortForce(i),1,'first');
+%CellMinOffAVGShortSortForce(i) = find([absMeanTracesSortForce(MeanCellMaxActuFirst(i):StartOffBelowAVG(i)+0.01*fs,i)] == MinAOffAVGSortForce(i),1,'first');  
+%CellMinOffAVGSortForce(i) = CellMinOffAVGShortSortForce(i)+MeanCellMaxActuFirst(i);
+%AvgMaxCurrentOffAVGSortForce(i) = mean(MeanTracesSortForce(CellMinOffAVGSortForce(i)-5:CellMinOffAVGSortForce(i)+5,i));
 end
+
 
 if isFivePosStep == 1;
 AvgMaxCurrentAVG = AvgMaxCurrentAVG;
@@ -916,11 +981,14 @@ legend('ON-Current','OFF-Current')
 hold on 
 subplot(3,2,6)
 scatter(MergeForce, AvgMaxCurrentAVGSortForce)
+%hold on 
+%subplot(3,2,6)
+%scatter(MergeForce, AvgMaxCurrentOffAVGSortForce)
+%legend('CurrentOn','CirrentOff')
 hold on 
-subplot(3,2,6)
-scatter(MergeForce, AvgMaxCurrentOffAVGSortForce)
-legend('CurrentOn','CirrentOff')
-
+subplot(3,2,4) % change test trial with charge
+scatter(MergeInd, ChargeQ)
+legend('test trial with charge')
 
 
 hold on 
@@ -939,55 +1007,48 @@ xlabel('Filenumber')
 title('control: Find OnSet of Stimulus')
 hold on 
 subplot(3,2,4)
-if isFiveStep == 1 || isFiveRamp == 1 || isFifteenStep == 1;
-    i = 1;
-while i <= length(MeanIndentation)
-scatter(Velocity(i:i+4), AverageMaxCurrentMinusppA(i:i+4),'LineWidth',2)%,'filled') %% would be nice to see the change in leak
-%set(h, 'SizeData', markerWidth^2)
-hold on
-i = i+5;
-title('Mean Cur vs Vel')
-xlim([0 max(MeanIndentation)+1])
-ylabel('Current (pA)')
-xlabel('Velocity(um/s)')
-%hold on 
-% for j = 1:size(Aall,2)/5
-% %legend(Files(j))  % include legend again
-% end
-end
-else
-scatter(Velocity, AverageMaxCurrentMinusppA,'LineWidth',2)
-title('Mean Cur vs Ind')
-%xlim([0 max(MeanIndentation)+1])
-ylabel('Current (pA)')
-xlabel('Velocity(um/s)')
-end
-%xlabel('Velocity')
-%title('control: Current over time')
-% hold on
-% xscatterMergeInd = length(MergeInd)
-% 
-% set(p1,'markerfacecolor','r')
-% set(p2,'markerfacecolor','g')
-%ylim([100 1000]) % ToDo: change it for Ramps
-% ylabel('Current (pA)')
-hold on
-xlabels{1} = 'Velocity (um/s)';
-xlabels{2} = '';
-ylabels{1} = 'Current (pA)';
-ylabels{2} = 'Ind (um)';
-subplot(3,2,5)
-[ax,hl1,hl2] = plotxx(Velocity,AverageMaxCurrentMinusppA,Velocity,MeanIndentation,xlabels,ylabels)
 
-%%%% maybe useful later
-% figure()
-% %subplot(3,2,5)
-% i = 1
-% while i <= length(MergeInd)
-% scatter(FindSameIndValues(:,i), FindSameIndCurrent(:,i),'LineWidth',2)
+%Velovity plot not in use right now
+%if isFiveStep == 1 || isFiveRamp == 1 || isFifteenStep == 1;
+ %   i = 1;
+% while i <= length(MeanIndentation)
+% scatter(Velocity(i:i+4), AverageMaxCurrentMinusppA(i:i+4),'LineWidth',2)%,'filled') %% would be nice to see the change in leak
+% %set(h, 'SizeData', markerWidth^2)
 % hold on
-% i = i+1;
+% i = i+5;
+% title('Mean Cur vs Vel')
+% xlim([0 max(MeanIndentation)+1])
+% ylabel('Current (pA)')
+% xlabel('Velocity(um/s)')
+% %hold on 
+% % for j = 1:size(Aall,2)/5
+% % %legend(Files(j))  % include legend again
+% % end
 % end
+% else
+% scatter(Velocity, AverageMaxCurrentMinusppA,'LineWidth',2)
+% title('Mean Cur vs Ind')
+% %xlim([0 max(MeanIndentation)+1])
+% ylabel('Current (pA)')
+% xlabel('Velocity(um/s)')
+% end
+
+% %xlabel('Velocity')
+% %title('control: Current over time')
+% % hold on
+% % xscatterMergeInd = length(MergeInd)
+% % 
+% % set(p1,'markerfacecolor','r')
+% % set(p2,'markerfacecolor','g')
+% %ylim([100 1000]) % ToDo: change it for Ramps
+% % ylabel('Current (pA)')
+% hold on
+% xlabels{1} = 'Velocity (um/s)';
+% xlabels{2} = '';
+% ylabels{1} = 'Current (pA)';
+% ylabels{2} = 'Ind (um)';
+% subplot(3,2,5)
+% [ax,hl1,hl2] = plotxx(Velocity,AverageMaxCurrentMinusppA,Velocity,MeanIndentation,xlabels,ylabels)
 
 
 %%
@@ -1091,9 +1152,11 @@ display 'include TauCalculation into delete singel series'
 %Export Data
 ExportMeanSameInd = [];ExportMeanSingle=[];ExportMeanSameIndOFF =[];ExportMeanSortForce=[];
 
+%AvgMaxCurrentMinus = AvgMaxCurrentMinus'
+ 
 if isFiveStep == 1 || isStep == 1 || isFifteenStep == 1 || isFivePosStep == 1 ; %change PosStep
 % ToDo change for Current ExportData = [MergeInd,MeanSameIndCurrent,NormMeanCurrent,MeanSameIndForce];
-ExportMeanSameInd = [MergeInd,MeanSameIndForce,AvgMaxCurrentAVG,AvgMaxCurrentAVG,NumberOfAvergagesPerInd,AvgMaxCurrentOffAVG,AvgMaxCurrentOffAVG];
+ExportMeanSameInd = [MergeInd,MeanSameIndForce,AvgMaxCurrentAVG,AvgMaxCurrentAVG,NumberOfAvergagesPerInd,AvgMaxCurrentOffAVG,AvgMaxCurrentOffAVG, ChargeQ, HalfT1ON, HalfT2ON];
 ExportMeanSingle = [MeanIndentationVer,MeanForceVer,AvgMaxCurrentMinus,AvgMaxCurrentMinusOff];
 ExportMeanSameIndOFF = [NumberOfAvergagesPerInd,AvgMaxCurrentOffAVG,AvgMaxCurrentOffAVG];
 ExportMeanSortForce = [MergeForce,AvgMaxCurrentAVGSortForce,AvgMaxCurrentOffAVGSortForce];
@@ -1102,6 +1165,7 @@ else
 ExportMeanSameVelDataMechanics = [MergeVel,MeanSameVelStiffnessRampVer,MeanSameVelIndentation];
 ExportMeanDataMechanics = [VelocityVer,StiffnessRampVer,MeanIndentationVer,MeanForceVer];
 end
+
 
 %%% write Matlabvariables
 if isFiveStep == 1 || isStep == 1 || isFivePosStep == 1;
@@ -1125,7 +1189,7 @@ if isFiveStep == 1 || isStep == 1 || isFivePosStep == 1;
 
 filename = sprintf('StepSameInd-%s.csv',name) ;
 fid = fopen(filename, 'w');
-fprintf(fid, 'MergeInd-%s, MeanSameIndForce-%s, SameIndCurrent-%s,SameIndCurrentCOPY-%s, NrAVGperIndentation-%s,SameIndCurrentOFF-%s,SameIndCurrentOFF-COPY-%s \n',name,name,name,name,name,name,name); %, MergeInd,MeanSameIndCurrent, asdasd, ..\n); %\n means start a new line
+fprintf(fid, 'MergeInd-%s, MeanSameIndForce-%s, SameIndCurrent-%s,SameIndCurrentCOPY-%s, NrAVGperIndentation-%s,SameIndCurrentOFF-%s,SameIndCurrentOFF-COPY-%s, ChargeQ-%s, HalfT1ON-%s, HalfT2ON-%s \n',name,name,name,name,name,name,name,name,name,name); %, MergeInd,MeanSameIndCurrent, asdasd, ..\n); %\n means start a new line
 fclose(fid);
 dlmwrite(filename, ExportMeanSameInd, '-append', 'delimiter', '\t'); %Use '\t' to produce tab-delimited files.
 

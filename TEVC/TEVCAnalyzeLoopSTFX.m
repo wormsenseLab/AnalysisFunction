@@ -31,15 +31,15 @@ close all; clc
 %%% hardcoding part: %%%%%%%
 stimuli = 'ContRamp1550'; % stimuli used to be analyzed. so far only one protocol
 %Ramp80COnt
-makePlots = 0; % if 1 than make pl, if 0 then skip
+makePlots = 0; % if 1 than make plot, if 0 then skip
 a1 = 2; %first file to be analyzed: (start with 2, because 1 is col header)
-a2 = LastFile;% LastFile; %for last File script must run once LastFile ; %(last file to be analyzed; either number or variable LastFile;
+a2 =  LastFile; %for last File script must run once LastFile ; %(last file to be analyzed; either number or variable LastFile;
 %%%%%%%%
 % to make a before (x1), drug (x2) and wash up (x3) trace plot, put number
 % of last sries when drug used here
-x1 = 2;
-x2 = 2;
-x3 = 3;
+x1 = 3;
+x2 = 4;
+x3 = 5;
 %%%%%%11
 AllCol = []; headers = [];indCellID = [];
 headers = raw(1,:); % saw 1st row of raw data as headers
@@ -85,8 +85,9 @@ writetable(T,filename,'WriteVar', true)
 % For loop to analyze all cells loaded from MetaData sheet.
 % a1 and a2 can be changed at the beginning or here.
 for i=a1:a2%1:LastFile;% %start with 2, because 1st value is header; shorten here, if you want to analyze less
- try
+try
 callCellID = {}; name = [];
+display(i)
 callCellID = raw(i,indCellID);
 name = callCellID{1};
 headers = raw(1,:);
@@ -155,8 +156,8 @@ Vall = V;
 
 %toDo: test this
       SlopeVall = [];
-  for j = 1:size(Vall,2)
-        for i = 1:length(Vall)-1
+  for j = 1:size(Vall,2);
+        for i = 1:length(Vall)-1;
         SlopeVall(i,j) = Vall(i+1,j) - Vall(i,j);
         end
   end
@@ -171,8 +172,8 @@ StartMinus85 = [];
 EndeMinus85 = [];
 EndeRamp = [];
 for i=1:size(Vall,2)
-StartMinus85(i) = find([SlopeVall(:,i)] < -0.002,1,'first'); 
-EndeMinus85(i) = find([SlopeVall(1:StartMinus85(i)*6,i)] < -0.002,1,'last');
+StartMinus85(i) = find([SlopeVall(:,i)] < -0.003,1,'first'); %-0.002
+EndeMinus85(i) = find([SlopeVall(1:StartMinus85(i)*6,i)] < -0.003,1,'last');
 EndeRamp(i) = find([SlopeVall(:,i)] < -0.002,1,'last');
 end
 
@@ -192,20 +193,20 @@ CalVrevStart = [];
 CalVrevEnde = [];
 VallRampShort = [];
 
-% figure()
-% plot(AallRamp)
+%figure()
+%plot(AallRamp)
 
 Vrev=[];
-for i=1:size(Vall,2)
-if AallRamp(:,i) >  120E-9 == 0 
-    CalVrevEnde(i) = NaN;
-    CalVrevStart(i) = NaN;
-    Vrev(i) = NaN;
-elseif AallRamp(:,i) <  -100E-9 == 0
-    CalVrevEnde(i) = NaN;
-    CalVrevStart(i) = NaN;
-    Vrev(i) = NaN;
-else
+for i=1:size(Vall,2);
+% if AallRamp(:,i) < 0.120-6 == 0% > 120E-9 == 0 
+%     CalVrevEnde(i) = NaN;
+%     CalVrevStart(i) = NaN;
+%     Vrev(i) = NaN;
+% elseif AallRamp(:,i) >  -300E-9 == 0%< -100E-9 == 0
+%     CalVrevEnde(i) = NaN;
+%     CalVrevStart(i) = NaN;
+%     Vrev(i) = NaN;
+% else
 CalVrevEnde(i) = find([AallRamp(:,i)] >  120E-9,1,'first');
 CalVrevStart(i) = find([AallRamp(:,i)] > -100E-9,1,'first');
 VallRampShort = VallRamp(CalVrevStart(i):CalVrevEnde(i),i); % cannot save, because different length
@@ -218,8 +219,10 @@ p = polyfit(VallRampShort,AallRampShort,1);
 % m = p(1)
 Vrev(i) = -p(2)/p(1);
 end
-end
- 
+
+%end
+
+
 
 %toDo: delete certain sweeps, because cell got leaky?
 % or, if error, skip, but write error message
@@ -236,7 +239,7 @@ MeanAllSolutionsNUM = [];
 MeanVrevNUM = []; 
 
 for i=1:numel(EndValSolutions)
-    if ischar(EndValSolutions{i,1}) == 1
+    if ischar(EndValSolutions{i,1}) == 1;
         EndValSolutionsNUM(i,1) = NaN;
         AllSolutionsNUM{i,1} = NaN;  
         MeanAllSolutionsNUM(i,1) = NaN;
@@ -386,7 +389,6 @@ end
  legend(name2)
   hold on
 plot(AalluA(:,x3-2:x3), 'c')
-
 
 
  Meanx1 = []; MeanVolx1 = [];
