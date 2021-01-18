@@ -75,9 +75,9 @@ Rating = {};
 CultivationSol = {};
 DaysPostInj = {};
 CellIDRec = {};
-Date = {}; 
+Date = {}
 
-T = table(Date, CellIDRec,Injection,CultivationSol,DaysPostInj,Rating,StartSol,TestSol,MeanSTART,MeanTEST, DELTA,RATIO,VrevSTART, VrevTEST,DELTAVrev);%
+T = table(Date,CellIDRec,Injection,CultivationSol,DaysPostInj,Rating,StartSol,TestSol,MeanSTART,MeanTEST, DELTA,RATIO,VrevSTART, VrevTEST,DELTAVrev,);%
 filename = sprintf('RatioDeltaTEVC-%s.txt',AnimalID); %define table
 %filename = sprintf('TEVCRatioDelta-%s.txt',name);
 writetable(T,filename,'WriteVar', true)
@@ -316,7 +316,7 @@ for i = 2:length(SortEndOfSolution) % starts at 2, so i-1 to get the first value
 end
 
 RatingExp = cell2mat(RatingExp);
-%DateExp = cell2mat(DateExp);
+DateExp = cell2mat(DateExp);
 DPIExp = cell2mat(DPIExp);
       
 %convert into cell to export in table function together with other cell

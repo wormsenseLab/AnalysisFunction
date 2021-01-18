@@ -34,12 +34,13 @@ close all; clc
 %%% hardcoding part: %%%%%%%
 %makelots = 0; % if 1 than make plots, if 0 then skip function not
 %imoplemented?
-a1 =3; %first file to be analyzed: (start with 2, because 1 is col header)
-a2 = a1%%LastFile; %for last File script must run o8ce LastFile ; %(last file to be analyzed; either number or variable LastFile;)
+a1 = 2; %first file to be analyzed: (start with 2, because 1 is col header)
+a2 = a1%LastFile; %for last File script must run o8ce LastFile ; %(last file to be analyzed; either number or variable LastFile;)
 LeakFile = 'NaGluBefore';
 stimuli = 'STEPSens';
 %%%%% !!!!!!!!!
-DimRefill =4; %change if File8 was not a Step : maybe, find first step protocol...
+DimRefill =5; %change: maybe if Vrev(1) == NaN, increase DimRfill and run again  
+%if File8 was not a Step : maybe, find first step protocol...
 %this needs to be changed, because stupidly hardcoded
 %DimOfA = cell2mat(A(8)); %TODO: needs to be a file with Step protocol.
 % needs to replace other protocols than StepSens with NaN values; shorting
@@ -183,9 +184,9 @@ AMeanMinus85 = mean(mean(Aall3D(100:200,:,:))); %ToDO: Not hardcode
 AMeanMinus85Series = permute(AMeanMinus85,[1 3 2]); % reorder the dimensions
 AMeanMinus85Series = reshape(AMeanMinus85Series,[],size(AMeanMinus85,2),1); %reduce from 3 dimensions to 2D; Averaging all -85 current over all 
 Vall3D = cat(3, VShort{:});
-figure()
-plot(AMeanMinus85Series, 'o')
- legend(InjectionMix)
+% figure()
+% plot(AMeanMinus85Series, 'o')
+%  legend(InjectionMix)
 
 %TODO: pay attention with AShort, because Series then are maybe not  
 AMean = mean(Aall3D(400:700,:,:)); %ToDo: Not hardcoded
@@ -382,9 +383,9 @@ absMEANConditions = abs(cell2mat(SortSubMEANConditions))';
 MinabsMEANConditions = [];
 MinabsMEANConditions = min(absMEANConditions);
 absMEANConditions = absMEANConditions';
-CellMin = [];
+CellMin = []; % what is cell Min? to find the closest point where line crosses the x axis to best determine vrev 
 
-MeanNew = []
+MeanNew = [];
 MeanNew = cell2mat(SortSubMEANConditions);
 
 for i = 1:size(Voltage,1)
@@ -392,16 +393,15 @@ for i = 1:size(Voltage,1)
             display 'not all solutions were used' 
             CellMin(i) = 0
      else      
-         display 'try again'
   CellMin(i) =  find([absMEANConditions(i,:)] == MinabsMEANConditions(i),1);
      end 
 end
 
-CellMin = CellMin';
+CellMin = CellMin'
 
 Vrev = [];
 for i = 1:size(Voltage,1)
-if CellMin(i) == 0
+if CellMin(i) == 0 || CellMin(i) == 1
     display 'not in recordings'
     Vrev(i) = NaN;
 else    
@@ -421,11 +421,11 @@ Vrev
 display 'if Vev all NaN, change DimRefill as this file is then not a step'
 
  
-figure()
-   scatter(cell2mat(Voltage(1,:)),MeanNew(1,:))
-   hold on
-   scatter(cell2mat(Voltage(3,:)),MeanNew(4,:))
-
+% figure()
+%    scatter(cell2mat(Voltage(1,:)),MeanNew(1,:))
+%    hold on
+%    scatter(cell2mat(Voltage(3,:)),MeanNew(4,:))
+% 
 
    
    T = table(CellIDRec,Injection,CultivationSol,DaysPostInj,Rating,Voltage,MeanSTEPs,LEAKMinus85,TestSol,Vrev,CurMinus85,SortIndexSolutions);%,IndexSolutions
