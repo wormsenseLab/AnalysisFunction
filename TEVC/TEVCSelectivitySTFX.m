@@ -35,17 +35,21 @@ close all; clc
 %makelots = 0; % if 1 than make plots, if 0 then skip function not
 %imoplemented?
 a1 = 2; %first file to be analyzed: (start with 2, because 1 is col header)
-a2 = a1%LastFile; %for last File script must run o8ce LastFile ; %(last file to be analyzed; either number or variable LastFile;)
+a2 = LastFile; %for last File script must run o8ce LastFile ; %(last file to be analyzed; either number or variable LastFile;)
 LeakFile = 'NaGluBefore';
 stimuli = 'STEPSens';
 %%%%% !!!!!!!!!
-DimRefill =5; %change: maybe if Vrev(1) == NaN, increase DimRfill and run again  
+
+% DimRefill =5; %change: maybe if Vrev(1) == NaN, increase DimRfill and run again  
 %if File8 was not a Step : maybe, find first step protocol...
 %this needs to be changed, because stupidly hardcoded
 %DimOfA = cell2mat(A(8)); %TODO: needs to be a file with Step protocol.
 % needs to replace other protocols than StepSens with NaN values; shorting
 % the input does not work, because the series are hardcoded in the metadata
 % sheet
+
+
+
 
 
 %%%%%%%%%%
@@ -99,6 +103,16 @@ headers = raw(1,:);
 FindRowIndCellId = strcmpi(raw,name); % name = recorded cell
 [RowCellId,col] = find(FindRowIndCellId,1);
 CellID = raw(RowCellId,indCellID); % get Cell ID to include into output table
+
+
+DimRefill = [];
+
+for i=1:50;
+    if size(ephysData.(name).data{1,i},2) == 9
+        DimRefill = i
+        break
+    end
+end
 
 %get protocol used
 %indProtokoll = find(strcmpi(headers, 'protocol')); 
@@ -202,8 +216,7 @@ SolutionsUsed = {}; indSolutions =[];%EndValSolutions =[];
 for i = 1:length(AllSolutions)
     indSolutions(i,1) = find(strcmpi(headers, AllSolutions(i))); 
      if strcmp({'NaN'},raw(RowCellId,indSolutions(i))) == 1
-           display 'not all solutions were used'
-     SolutionsUsed{i} =  {'NaN'}     
+     SolutionsUsed{i} =  {'NaN'}  ;   
      else      
      SolutionsUsed{i} =  AllSolutions{i}; 
      end
@@ -390,19 +403,19 @@ MeanNew = cell2mat(SortSubMEANConditions);
 
 for i = 1:size(Voltage,1)
      if isnan(MinabsMEANConditions(i)) == 1
-            display 'not all solutions were used' 
-            CellMin(i) = 0
+%             display 'not all solutions were used' 
+            CellMin(i) = 0;
      else      
   CellMin(i) =  find([absMEANConditions(i,:)] == MinabsMEANConditions(i),1);
      end 
 end
 
-CellMin = CellMin'
+CellMin = CellMin';
 
 Vrev = [];
 for i = 1:size(Voltage,1)
 if CellMin(i) == 0 || CellMin(i) == 1
-    display 'not in recordings'
+%     display 'not in recordings'
     Vrev(i) = NaN;
 else    
 %p = polyfit(cell2mat(Voltage(i,CellMin(i)-1:CellMin(i)+1)),MEANConditions(i,CellMin(i)-1:CellMin(i)+1),1);
@@ -418,7 +431,7 @@ end
 end
 Vrev = Vrev';
 Vrev
-display 'if Vev all NaN, change DimRefill as this file is then not a step'
+% display 'if Vev all NaN, change DimRefill as this file is then not a step'
 
  
 % figure()

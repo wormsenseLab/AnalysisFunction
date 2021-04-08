@@ -32,8 +32,8 @@ close all; clc
 stimuli = 'ContRamp1550'; % stimuli used to be analyzed. so far only one protocol
 %Ramp80COnt
 makePlots = 0; % if 1 than make plot, if 0 then skip
-a1 = 2; %first file to be analyzed: (start with 2, because 1 is col header)
-a2 =  LastFile; %for last File script must run once LastFile ; %(last file to be analyzed; either number or variable LastFile;
+a1 =2; %first file to be analyzed: (start with 2, because 1 is col header)
+a2 = LastFile; %for last File script must run once LastFile ; %(last file to be analyzed; either number or variable LastFile;
 %%%%%%%%
 % to make a before (x1), drug (x2) and wash up (x3) trace plot, put number
 % of last sries when drug used here
@@ -117,7 +117,7 @@ indRating = find(strcmpi(headers, 'Rating'));
 Rating = raw(RowCellId,indRating); 
 
 %get date of recording (subjective)
-indDate = find(strcmpi(headers, 'Filename')); 
+indDate = find(strcmpi(headers, 'Recording Date')); 
 Date = raw(RowCellId,indDate);
 
 %get cultivation Solution
@@ -187,7 +187,7 @@ end
 % hold on
 % plot(EndeMinus85)
 %print
-reminder = 'calculate Average from Start Minus85'
+%reminder = 'calculate Average from Start Minus85 for noit hardcoding'
 % ToDO: calculate Average Start Minus and if StartMinus85(EndValSolutions) < Avg
 % break
 
@@ -287,7 +287,7 @@ RationMean = []; DeltaMean = []; StartSolution ={};TestSolution ={};MeanStart = 
 %InjectionMixCell = cellstr(InjectionMix);
 VrevStart = []; VrevTest = []; DeltaVrev = [];
 InjectionMixExp = {}; RatingExp ={}; CultivationExp = {}; DPIExp ={}; CellIDExp = {};
-DateExp = {}
+DateExp = {};
 
 %change ratio; 1- test/start
 for i = 2:length(SortEndOfSolution) % starts at 2, so i-1 to get the first value
@@ -354,7 +354,7 @@ AalluA = [];
 AalluA = Aall*(1*10^6);
 LegendInj = InjectionMixExp(1);
 LegendInj = cell2mat(LegendInj);
-name2 = cell2mat(CellID);
+name2 = cell2mat(CellID)
 
 MeanCurNaGlu = [];
 MeanCurAmil = [];
@@ -381,36 +381,38 @@ plot(VrevmV,'o')
 ylabel('Reversal Potential (mV)')
 xlabel('Points')
 
- figure()
- hold on
-for i = 1:length(SortEndOfSolution)
- plot(AalluA(:,SortEndOfSolution(i)-2:SortEndOfSolution(i)))
- % legend(EndValSolutionsNUM(i))
- hold on
-end
+%  figure()
+%  hold on
+% for i = 1:length(SortEndOfSolution)
+%  plot(AalluA(:,SortEndOfSolution(i)-2:SortEndOfSolution(i)))
+%  % legend(EndValSolutionsNUM(i))
+%  hold on
+% end
 
- figure()
- plot(AalluA(:,x1-2:x1),'b')
- % legend(EndValSolutionsNUM(i))
- hold on
- plot(AalluA(:,x2-2:x2), 'r')
- legend(name2)
-  hold on
-plot(AalluA(:,x3-2:x3), 'c')
+% 
+%  figure()
+%  plot(AalluA(:,x1-2:x1),'b')
+%  % legend(EndValSolutionsNUM(i))
+%  hold on
+%  plot(AalluA(:,x2-2:x2), 'r')
+%  legend(name2)
+%   hold on
+% plot(AalluA(:,x3-2:x3), 'c')
+% 
+% 
+%  Meanx1 = []; MeanVolx1 = [];
+%  Meanx1 = mean(A(:,x1-2:x1),2);
+%  MeanVolx1 = mean(V(:,x1-2:x1),2);
+%  
+%  Meanx2 = []; MeanVolx2 = [];
+%  Meanx2 = mean(A(:,x2-2:x2),2);
+%  MeanVolx2 = mean(V(:,x2-2:x2),2);
+%  
+%  Meanx3 = []; MeanVolx3 = [];
+%  Meanx3 = mean(A(:,x3-2:x3),2);
+%  MeanVolx3 = mean(V(:,x3-2:x3),2);
+%  
 
-
- Meanx1 = []; MeanVolx1 = [];
- Meanx1 = mean(A(:,x1-2:x1),2);
- MeanVolx1 = mean(V(:,x1-2:x1),2);
- 
- Meanx2 = []; MeanVolx2 = [];
- Meanx2 = mean(A(:,x2-2:x2),2);
- MeanVolx2 = mean(V(:,x2-2:x2),2);
- 
- Meanx3 = []; MeanVolx3 = [];
- Meanx3 = mean(A(:,x3-2:x3),2);
- MeanVolx3 = mean(V(:,x3-2:x3),2);
- 
  
 %  figure()
 % plot(AalluA(:,1:3))
@@ -419,8 +421,7 @@ plot(AalluA(:,x3-2:x3), 'c')
 % legend(name2,LegendInj)
  ylabel('Current (uA)')
  xlabel('Sweep length (ms) - (interval 4 s)')
-else
-display 'continue, no figures generated'
+
 end
 %TODO: add a line to each solutions for a quick overview what was performed
 % figure()
@@ -467,7 +468,11 @@ fmt=[strjoin(fmt,',') '\n'];
  fclose(fid);
 
     catch
-        display 'there were an error; skip this file; write in table that there were an error'
+        display 'there were an error; This file will be skipped for analysis.'
+        display 'Debugging: type "name" in the command window below to figure our the file name.'
+        display 'typical error: 1) check if the file exist in the data structure ephysData on the right in Workspace.'
+        display '2) Verify that the name in MetaData Sheet is correct.'
+        display 'Check if you entered the correct series'
         continue
     end
     
