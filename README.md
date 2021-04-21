@@ -4,7 +4,7 @@ Analysis Function provides scripts to analyze electrophysiological data recorded
 
 ## TEVC data 
 ## Contents
- - [test heading](#test-heading ) 
+ - [test heading](#test-heading) 
 
 ##### (works with from MATLAB_R2014b to R2020b - have not tested above)
 
@@ -54,7 +54,7 @@ Selectivity Study:
 -	Before starting the analysis, navigate to the folder where you want to save the Ratio-analysis files. In my case: /Users/Fechner/Box Sync/Fechner/TEVC-GoodmanlabBOX/Project-STFX/RatioSTFX
 
 
-##test heading 
+## test heading 
 
 ##### Run TEVCAnalyzeLoopSTFX.m for analysis of amplitude <span id="TEVCAnalyzeLoopSTFX.m"><span>
 
