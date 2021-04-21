@@ -4,7 +4,7 @@ Analysis Function provides scripts to analyze electrophysiological data recorded
 
 ## TEVC data 
  - [How to use Scripts](#how-to-use-scripts) 
- - [testing suheaders](#testing-suheaders)
+ - [Run matlab script TEVCAnalyzeLoopSTFX for analysis of amplitude](#Run-matlab-script-tEVCAnalyzeLoopSTFX-for-analysis-of-amplitude)
  - [Run matlab script TEVCSelectivitySTFX for analysis of selectivity](#Run-matlab-script-tEVCSelectivitySTFX-for-analysis-of-selectivity)
 
 ##### (works with from MATLAB_R2014b to R2020b - have not tested above)
@@ -58,7 +58,7 @@ Selectivity Study:
 -	Before starting the analysis, navigate to the folder where you want to save the Ratio-analysis files. In my case: /Users/Fechner/Box Sync/Fechner/TEVC-GoodmanlabBOX/Project-STFX/RatioSTFX
 
 
-##### Run TEVCAnalyzeLoopSTFX.m for analysis of amplitude 
+##### Run matlab script TEVCAnalyzeLoopSTFX for analysis of amplitude 
 
 - First section (load dat.files)
 	- which is a script from Sammy (I copied those files in a folder locally and not using the one from Github, but Github would probably be fine).
@@ -84,7 +84,6 @@ Selectivity Study:
 	- You can create a plot for each recording by changing the variable *makePlots* from 0 to 1
 	- The code creates a “single” (!) file called RatioDeltaTEVC-STFX112.txt where STFX112 is taken from the MetaData sheet entry.
 
-##### testing suheaders
 
 ##### Run matlab script TEVCSelectivitySTFX for analysis of selectivity
 
