@@ -4,7 +4,8 @@ Analysis Function provides scripts to analyze electrophysiological data recorded
 
 ## TEVC data 
  - [How to use Scripts](#how-to-use-scripts) 
- - [Run TEVCSelectivitySTFX.m for analysis of selectivity](#####run-tEVCSelectivitySTFX.m-for-analysis-of-selectivity)
+ - [testing suheaders](#####testing-suheaders)
+ - [Run TEVCSelectivitySTFX.m for analysis of selectivity](#run-tEVCSelectivitySTFX.m-for-analysis-of-selectivity)
 
 ##### (works with from MATLAB_R2014b to R2020b - have not tested above)
 
@@ -83,6 +84,7 @@ Selectivity Study:
 	- You can create a plot for each recording by changing the variable *makePlots* from 0 to 1
 	- The code creates a “single” (!) file called RatioDeltaTEVC-STFX112.txt where STFX112 is taken from the MetaData sheet entry.
 
+##### testing suheaders
 
 ##### Run TEVCSelectivitySTFX.m for analysis of selectivity
 
