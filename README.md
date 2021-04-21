@@ -3,9 +3,8 @@
 Analysis Function provides scripts to analyze electrophysiological data recorded with the HEKA system: the FALCON patch clamp system which combines the application of mechanical stimuli with self-sensing cantilever (Patch Clamp folder) and the two electrode voltage clamp system (TEVC folder). 
 
 ## TEVC data 
-## Contents
- - [test heading](#test-heading) 
- - [Run TEVCSelectivitySTFX.m for analysis of selectivity](#run-tEVCSelectivitySTFX.m-for-analysis-of-selectivity)
+ - [How to use Scripts](#how-to-use-scripts) 
+ - [Run TEVCSelectivitySTFX.m for analysis of selectivity](#####run-tEVCSelectivitySTFX.m-for-analysis-of-selectivity)
 
 ##### (works with from MATLAB_R2014b to R2020b - have not tested above)
 
@@ -55,7 +54,7 @@ Selectivity Study:
 -	Before starting the analysis, navigate to the folder where you want to save the Ratio-analysis files. In my case: /Users/Fechner/Box Sync/Fechner/TEVC-GoodmanlabBOX/Project-STFX/RatioSTFX
 
 
-## test heading 
+## How to use Scripts 
 
 ##### Run TEVCAnalyzeLoopSTFX.m for analysis of amplitude <span id="TEVCAnalyzeLoopSTFX.m"><span>
 
