@@ -38,6 +38,9 @@ Selectivity Study:
 - Enter the series numbers for the 3 STEPSens replicates in TEVCMetaSTFX112-Selectivity.xlsx (replace STFX112 with current frog number) Meta data sheet found here: /Users/Fechner/Box Sync/Fechner/TEVC-GoodmanlabBOX/Project-STFX/MetaDataSTFX
 - example meta data for the analysis on frog STFX112 are found in the folder ExampleExcelSheets (including example dat files 20210321 & 20210322
 
+
+## How to use Scripts 
+
 ##### RUN MATLAB Code:
 
 - Clone matlab code to your computer
@@ -54,9 +57,7 @@ Selectivity Study:
 -	Before starting the analysis, navigate to the folder where you want to save the Ratio-analysis files. In my case: /Users/Fechner/Box Sync/Fechner/TEVC-GoodmanlabBOX/Project-STFX/RatioSTFX
 
 
-## How to use Scripts 
-
-##### Run TEVCAnalyzeLoopSTFX.m for analysis of amplitude <span id="TEVCAnalyzeLoopSTFX.m"><span>
+##### Run TEVCAnalyzeLoopSTFX.m for analysis of amplitude 
 
 - First section (load dat.files)
 	- which is a script from Sammy (I copied those files in a folder locally and not using the one from Github, but Github would probably be fine).
