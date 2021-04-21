@@ -5,6 +5,7 @@ Analysis Function provides scripts to analyze electrophysiological data recorded
 ## TEVC data 
 ## Contents
  - [test heading](#test-heading) 
+ - [Run TEVCSelectivitySTFX.m for analysis of selectivity](#run-tEVCSelectivitySTFX.m-for-analysis-of-selectivity)
 
 ##### (works with from MATLAB_R2014b to R2020b - have not tested above)
 
