@@ -1,6 +1,6 @@
 # AnalysisFunction
 
-Analysis Function provides scripts to analyze electrophysiological data recorded with the HEKA system: the FALCON patch clamp system which combines the application of mechanical stimuli with self-sensing cantilever (Patch Clamp folder) and the two electrode voltage clamp system (TEVC folder). 
+Analysis Function provides scripts to analyze electrophysiological data recorded with the HEKA system: the FALCON patch clamp system which combines the application of mechanical stimuli with self-sensing cantilever (Patch Clamp folder) and the two electrode voltage clamp system (TEVC folder). Author: Sylvia Fechner, PhD.
 
 ## TEVC data 
  - [How to use Scripts](#how-to-use-scripts) 
