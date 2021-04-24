@@ -2,13 +2,17 @@
 
 Analysis Function provides scripts to analyze electrophysiological data recorded with the HEKA system: the FALCON patch clamp system which combines the application of mechanical stimuli with self-sensing cantilever (Patch Clamp folder) and the two electrode voltage clamp system (TEVC folder). Author: Sylvia Fechner, PhD.
 
+## Data from other sources that are included in this repo
+- AimportFunctionSammyKatta, older version of Sammy's import function that work with my code. The newer version can be found [here](https://github.com/wormsenseLab/Matlab-PatchMaster)
+- sigtoolKit newer versions can be found [here](http://sigtool.sourceforge.net/sigtool.html) 
+
 ## Patchmaster data including biomechanics
 - [Patchmaster data](#patchmaster-data)
 - [How to measure worm stiffness with FALCON](#How-to-measure-worm-stiffness-with-fALCON)
 
 
 
-## TEVC data (test test)
+## TEVC data
  - [How to use Scripts](#how-to-use-scripts) 
  - [Run matlab script TEVCAnalyzeLoopSTFX for analysis of amplitude](#Run-matlab-script-tEVCAnalyzeLoopSTFX-for-analysis-of-amplitude)
  - [Run matlab script TEVCSelectivitySTFX for analysis of selectivity](#Run-matlab-script-tEVCSelectivitySTFX-for-analysis-of-selectivity)
@@ -70,6 +74,10 @@ Selectivity Study:
 	- which is a script from Sammy (I copied those files in a folder locally and not using the one from Github, but Github would probably be fine).
 	- Navigate to the folder where the .dat files are stored, in my case: /Users/Fechner/Box Sync/Fechner/TEVC-GoodmanlabBOX/Project-STFX/datFilesSTFX
 	- Loads a file structure called ephysData (explore data, contains navigation to all series etc)
+	- requirements
+		- ImportMetaData.m
+		- ImportPatchData.m
+		- SplitSeries.m
 
 - Second section (Load Meta Data TEVC)
 	- Load Meta Data for amiloride sensitive amplitude measurements
@@ -114,6 +122,29 @@ Selectivity Study:
 ## Patchmaster data
 
 ### How to measure worm stiffness with FALCON
+- scripts were developed in Matlab 2014b, still runs on Matlab2018b
+- *tsmovavg* does not work in 2020 anymore
+
+- example .dat file please reach out to me or Miriam
+- examples notes/MetaData for dat file are in the folder 
+ExampleDataAndSheets/ExampleBodyMechanics
+
+- scripts needed to run BodyMechanics analysis
+	- ImportMetaData.m
+	- ImportPatchData.m
+	- SplitSeries.m
+	- BOMDisplaceClamp.m (main script!)
+	- AnalyzeForceClampBOM.m
+
+
+### Run BOM Script
+- First section
+	-  Identical to amplitude section: [Run matlab script TEVCAnalyzeLoopSTFX for analysis of amplitude](#Run-matlab-script-tEVCAnalyzeLoopSTFX-for-analysis-of-amplitude)
+- Second section (Load Meta Data TEVC)
+	- Similar, but different MetaData sheet: 20161114-BOM-notes.xlsx
+- Third section
+	- calculates the body stiffness of the worm
+
 
 
 
