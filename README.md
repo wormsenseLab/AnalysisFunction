@@ -2,6 +2,12 @@
 
 Analysis Function provides scripts to analyze electrophysiological data recorded with the HEKA system: the FALCON patch clamp system which combines the application of mechanical stimuli with self-sensing cantilever (Patch Clamp folder) and the two electrode voltage clamp system (TEVC folder). Author: Sylvia Fechner, PhD.
 
+## Patchmaster data including biomechanics
+- [Patchmaster data](#patchmaster-data)
+- [How to measure worm stiffness with FALCON](#How-to-measure-worm-stiffness-with-fALCON)
+
+
+
 ## TEVC data (test test)
  - [How to use Scripts](#how-to-use-scripts) 
  - [Run matlab script TEVCAnalyzeLoopSTFX for analysis of amplitude](#Run-matlab-script-tEVCAnalyzeLoopSTFX-for-analysis-of-amplitude)
@@ -103,5 +109,11 @@ Selectivity Study:
 ### Figure creating with Jupyter notebook:
 	
 [Jupyter notebooks DEG/ENaC/ASIC channels TEVC](https://github.com/wormsenseLab/JupyterNotebooksDEGENaCPharm.git)
+
+
+## Patchmaster data
+
+### How to measure worm stiffness with FALCON
+
 
 
