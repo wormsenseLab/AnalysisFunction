@@ -107,18 +107,19 @@ Selectivity Study:
 
 ##### Run matlab script TEVCSelectivitySTFX for analysis of selectivity
 
-- First section
-	- Identical to amplitude section
+open script TEVCSelectivitySTFX.m
+	- First section
+		- Identical to amplitude section
 
-- Second section (Load Meta Data TEVC)
-	- Similar, but different MetaData sheet: /Users/Fechner/Box Sync/Fechner/TEVC-GoodmanlabBOX/Project-STFX/MetaDataSTFX e.g. the file TEVCMetaSTFX112-Selectivity.xlsx
+	- Second section (Load Meta Data TEVC)
+		- Similar, but different MetaData sheet: /Users/Fechner/Box Sync/Fechner/TEVC-GoodmanlabBOX/Project-STFX/MetaDataSTFX e.g. the file TEVCMetaSTFX112-Selectivity.xlsx
 
-- Third Section:
-	- Same procedure as script above
-	- Enter “2” behind the variable *a1* (2 is the first recording)
-	- In the first round, enter 2 as well behind the variable *a2*
-	- After running the code ones, you can use the variable *LastFile* behind a2, but it doesn’t exist in the first round yet 
-	- It generates an individual files for each recording, e.g.: Selectivity-TEVC-STFX112023.txt
+	- Third Section:
+		- Same procedure as script above
+		- Enter “2” behind the variable *a1* (2 is the first recording)
+		- In the first round, enter 2 as well behind the variable *a2*
+		- After running the code ones, you can use the variable *LastFile* behind a2, but it doesn’t exist in the first round yet 
+		- It generates an individual files for each recording, e.g.: Selectivity-TEVC-STFX112023.txt
 
 ### Figure creating with Jupyter notebook:
 	
@@ -134,7 +135,7 @@ Selectivity Study:
 - example .dat file available in Link in Folder ExampleDataAndSheets *LinkToExampleDatFiles*
 - examples notes/MetaData for dat file are in the folder 
 ExampleDataAndSheets/ExampleBodyMechanics
-- go to section [RUN MATLAB Code](#RUN-mATLAB-code) for installation of sigTOOL
+- go to section [How to use Scripts](#How-to-use-scripts) for installation of sigTOOL
 
 - scripts needed to run BodyMechanics analysis
 	- ImportMetaData.m (Sammy)
@@ -145,12 +146,14 @@ ExampleDataAndSheets/ExampleBodyMechanics
 
 
 ### Run BOM Script
-- First section
-	-  Identical to amplitude section: [Run matlab script TEVCAnalyzeLoopSTFX for analysis of amplitude](#Run-matlab-script-tEVCAnalyzeLoopSTFX-for-analysis-of-amplitude)
-- Second section (Load Meta Data TEVC)
-	- Similar, but different MetaData sheet: 20161114-BOM-notes.xlsx
-- Third section
-	- calculates the body stiffness of the worm
+
+- open script BOMDisplaceClamp.m 
+	- First section
+		-  Identical to amplitude section: [Run matlab script TEVCAnalyzeLoopSTFX for analysis of amplitude](#Run-matlab-script-tEVCAnalyzeLoopSTFX-for-analysis-of-amplitude)
+	- Second section (Load Meta Data TEVC)
+		- Similar, but different MetaData sheet: 20161114-BOM-notes.xlsx
+	- Third section
+		- calculates the body stiffness of the worm
 
 
 
