@@ -56,15 +56,21 @@ Selectivity Study:
 
 - Clone matlab code to your computer
 	- https://github.com/wormsenseLab/AnalysisFunction.git
--	Prerequisite: follow the instruction of sigtool installation for the import.dat files [sigTOOL installation prerequisite](https://github.com/wormsenseLab/Matlab-PatchMaster)
+-	Prerequisite: sigTOOL
+	- Sammy's description here: [sigTOOL installation prerequisite](https://github.com/wormsenseLab/Matlab-PatchMaster)
 	- copied from Sammy's readme: IMPORTANT: The ImportHEKAtoMat function (a modified version of ImportHEKA) must be placed in the sigTOOL folder: 'sigTOOL\sigTOOL NeuroscienceToolkit\File\menu_Import\group_NeuroScience File Formats'
-- important functions from Sammy
+		- in the version in my repo *sigTOOL copied from* the Heka FIle is already in the correct folder
+	- read the Installing sigTOOL.pdf
+
+- important functions from Sammy for my code. 
 	- ImportMetaData.m
 	- ImportPatchData.m
 	- SplitSeries.m
--  you can also find the sigtool folder and all the scripts used in the folder for the summer interns: /Users/Fechner/Box Sync/Fechner/TEVC-GoodmanlabBOX/StanfordSummerInternship/MatlabScripts
+- you can find the newer versions of [Sammy's function here:](https://github.com/wormsenseLab/Matlab-PatchMaster), but they don't work with my scripts, thus use the functions from the folder *AimportFunctionSammyKatta/Import*
+
 - Open Matlab
--	Type sigTOOL in command window, click continue, if a window appears (mostly grey), just close it.
+- Type sigTOOL (after set to path is complete) in command window, click continue, if a window appears (mostly grey), just close it.
+- add analysis and import functions to path
 -	Before starting the analysis, navigate to the folder where you want to save the Ratio-analysis files. In my case: /Users/Fechner/Box Sync/Fechner/TEVC-GoodmanlabBOX/Project-STFX/RatioSTFX
 
 
@@ -125,14 +131,15 @@ Selectivity Study:
 - scripts were developed in Matlab 2014b, still runs on Matlab2018b
 - *tsmovavg* does not work in 2020 anymore
 
-- example .dat file please reach out to me or Miriam
+- example .dat file available in Link in Folder ExampleDataAndSheets *LinkToExampleDatFiles*
 - examples notes/MetaData for dat file are in the folder 
 ExampleDataAndSheets/ExampleBodyMechanics
+- go to section [RUN MATLAB Code](#RUN-mATLAB-code) for installation of sigTOOL
 
 - scripts needed to run BodyMechanics analysis
-	- ImportMetaData.m
-	- ImportPatchData.m
-	- SplitSeries.m
+	- ImportMetaData.m (Sammy)
+	- ImportPatchData.m (Sammy)
+	- SplitSeries.m (Sammy)
 	- BOMDisplaceClamp.m (main script!)
 	- AnalyzeForceClampBOM.m
 
