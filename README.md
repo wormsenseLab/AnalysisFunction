@@ -3,7 +3,7 @@
 Analysis Function provides scripts to analyze electrophysiological data recorded with the HEKA system: the FALCON patch clamp system which combines the application of mechanical stimuli with self-sensing cantilever (Patch Clamp folder) and the two electrode voltage clamp system (TEVC folder). Author: Sylvia Fechner, PhD.
 
 ## Data from other sources that are included in this repo
-- AimportFunctionSammyKatta, older version of Sammy's import function that work with my code. The newer version can be found [here](https://github.com/wormsenseLab/Matlab-PatchMaster)
+- AimportFunctionSammyKatta, older version of Sammy's import function that works with my code. The newer version can be found [here](https://github.com/wormsenseLab/Matlab-PatchMaster)
 - sigtoolKit newer versions can be found [here](http://sigtool.sourceforge.net/sigtool.html) 
 
 ## Patchmaster data including biomechanics
@@ -29,7 +29,7 @@ Selectivity Study:
 	- adjust comments to prepare for how many recordings and which conditions to do
 
 ### DAY 1: inject oocytes
-- inject oocytes and keep at 18C in L-15 + 300 uM Amilroide
+- inject oocytes and keep at 18C in L-15 + 300 uM amiloride
 
 ### DAY 4 to 7: recordings
 - for selectivity measurements I always use the following sequences: 
